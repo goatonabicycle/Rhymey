@@ -1,0 +1,29 @@
+﻿.rhyme-popup-contain {
+  background-color: white;
+  color: black;
+  /* font-family: Verdana, Geneva, sans-serif; */
+  position: fixed;
+  top: 10px;
+  right: 30px;
+  width: 140px;
+  height: auto;
+  /*max-height:950px;*/
+  max-height: 90%;
+  margin-bottom: 20px;
+  overflow: hidden;
+  font-size: 15px;
+  z-index: 99999999999999999999;
+  padding: 10px;
+  border-radius: 2px;
+  overflow-y: auto;
+  border: 1px solid black !important;
+  border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  -khtml-border-radius: 7px;
+  /*Current logo colour rgb(196,75,75)*/
+}
+
+.title {
+  border: 1px solid red;
+}
