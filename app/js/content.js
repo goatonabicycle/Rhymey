@@ -60,7 +60,7 @@ function RenderResponsePopup(response) {
       container.id = "RhymeContainer";
       container.className = "rhyme-popup-contain";
       container.innerHTML =
-        "<div><div class='title'>" +
+        "<div><div class='rhymey-title'>" +
         title +
         "</div><br />" +
         display +
