@@ -1,21 +1,24 @@
 var selectedWord = ''
-var renderSeperator = ', '
+var renderSeperator = '<br/> '
 var wordMustBeAtLeast = 2
 
-const RenderResponsePopup = (response) => {
-  try {
-    var numberOfRhymes = response.rhymingWords.length
-    var display = getStringToRender(response.rhymingWords)
-    removePopup()
+const getRhymingWords = (selectedWord) => {
+  console.log({ selectedWord })
+  fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord)
+    .then(response => response.json())
+    .then(json => renderPopup(json))
+}
 
-    var thereAreThingsThatRhyme = numberOfRhymes >= 1
-    if (thereAreThingsThatRhyme) {
-      renderPopup(display)
-    } else {
-      alert('No rhymes found for {' + selectedWord + '}') // Some sort of "Sorry... Nothing found" message maybe? Probably.
-    }
-  } catch (e) {
-    console.log(e)
+const renderPopup = (data) => {
+  var numberOfRhymes = data.length
+  var display = getStringToRender(data)
+  removePopup()
+
+  var thereAreThingsThatRhyme = numberOfRhymes >= 1
+  if (thereAreThingsThatRhyme) {
+    addPopupToPage(display)
+  } else {
+    alert('No rhymes found for {' + selectedWord + '}') // Some sort of "Sorry... Nothing found" message maybe? Probably.
   }
 }
 
@@ -23,8 +26,8 @@ const getStringToRender = (splitItems) => {
   var renderstring = ''
 
   for (var i = 0; i < splitItems.length; i++) {
-    if (selectedWord !== splitItems[i]) {
-      renderstring += splitItems[i] + renderSeperator
+    if (selectedWord !== splitItems[i].word) {
+      renderstring += splitItems[i].word + renderSeperator
     }
   }
 
@@ -40,12 +43,11 @@ document.addEventListener('dblclick', () => {
   var sel = window.getSelection().toString()
   if (sel.length && sel.trim().length > wordMustBeAtLeast) {
     selectedWord = sel.trim()
-    chrome.extension.sendMessage({ data: sel }, null, RenderResponsePopup)
+    getRhymingWords(selectedWord)
   } else { selectedWord = '' }
 })
 
-const renderPopup = (display) => {
-  console.log({ display })
+const addPopupToPage = (display) => {
   var container = document.createElement('div')
   container.id = 'RhymeContainer'
   container.className = 'rhyme-popup-contain'
