@@ -1,18 +1,10 @@
-//*****************************************************************************************************//
+const handleMessage = (request, sender, sendResponse) => {
+  var CleanWord = request.data
+    .replace(/[|&;$%@"<>()+,]/g, '')
+    .toLowerCase()
+    .trim()
 
-handleMessage = (request, sender, sendResponse) => {
-  try {
-    var CleanWord = request.data
-      .replace(/[|&;$%@"<>()+,]/g, "")
-      .toLowerCase()
-      .trim();
+  sendResponse({ rhymingWords: pronouncing.rhymes(CleanWord) })
+}
 
-    sendResponse({ outObjects: pronouncing.rhymes(CleanWord) });
-  } catch (e) {
-    alert(e.message);
-  }
-};
-
-chrome.extension.onMessage.addListener(handleMessage);
-
-//*****************************************************************************************************//
+chrome.extension.onMessage.addListener(handleMessage)

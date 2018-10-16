@@ -2,14 +2,29 @@
   "name": "Rhymey",
   "short_name": "Rhymey",
   "description": "An extension that gets words that rhyme with your selected word. Useful for poetry.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "manifest_version": 2,
-  "permissions": [ "tabs", "storage", "*://*/*", "http://*/*", "https://*/*", "http://localhost/*" ],
+  "permissions": [
+    "tabs",
+    "storage",
+    "*://*/*",
+    "http://*/*",
+    "https://*/*",
+    "http://localhost/*"
+  ],
   "content_scripts": [
     {
-      "matches": [ "http://*/*", "https://*/*", "http://localhost/*" ],
-      "js": [ "js/jquery-2.1.4.min.js", "js/content.js" ],
-      "css": [ "css/custom.css" ]
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "http://localhost/*"
+      ],
+      "js": [
+        "js/content.js"
+      ],
+      "css": [
+        "css/custom.css"
+      ]
     }
   ],
   "icons": {
@@ -18,7 +33,10 @@
     "128": "icons/icon128.png"
   },
   "background": {
-    "scripts": [ "js/jquery-2.1.4.min.js", "js/pronouncing-browser.js", "js/background.js" ],
+    "scripts": [
+      "js/pronouncing-browser.js",
+      "js/background.js"
+    ],
     "persistent": false
   }
 }

@@ -1,4 +1,12 @@
-- Remove jquery
-- Code neatening in general.
-- Style everything better.
-- investigate making api calls from a chrome extention. 
+x Remove jquery
+x Code neatening in general.
+- "No rhyme found" state
+--------
+- Investigate making api calls from a chrome extention. 
+- Show number of rhymes found?
+--------
+- Add options
+- Style the popup  better.
+
+
+
