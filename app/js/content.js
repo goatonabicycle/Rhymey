@@ -1,68 +1,51 @@
-var selectedWord = ''
-var renderSeperator = '<br/> '
-var wordMustBeAtLeast = 2
-
-const getRhymingWords = (selectedWord) => {
-  console.log({ selectedWord })
-  fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord)
-    .then(response => response.json())
-    .then(json => renderPopup(json))
-}
-
-const renderPopup = (data) => {
-  var numberOfRhymes = data.length
-  var display = getStringToRender(data)
-  removePopup()
-
-  var thereAreThingsThatRhyme = numberOfRhymes >= 1
-  if (thereAreThingsThatRhyme) {
-    addPopupToPage(display)
-  } else {
-    alert('No rhymes found for {' + selectedWord + '}') // Some sort of "Sorry... Nothing found" message maybe? Probably.
-  }
-}
-
-const getStringToRender = (splitItems) => {
-  var renderstring = ''
-
-  for (var i = 0; i < splitItems.length; i++) {
-    if (selectedWord !== splitItems[i].word) {
-      renderstring += splitItems[i].word + renderSeperator
-    }
-  }
-
-  return renderstring.replace(/,\s*$/, '')
-}
-
-document.addEventListener('mouseup', (event) => {
-  if (event.target.closest('.rhyme-popup-contain')) return
-  removePopup()
-})
+let selectedWord = ''
+let renderSeperator = '<br/> '
+let wordMustBeAtLeastThisLong = 2
 
 document.addEventListener('dblclick', () => {
-  var sel = window.getSelection().toString()
-  if (sel.length && sel.trim().length > wordMustBeAtLeast) {
+  let sel = window.getSelection().toString()
+  if (sel.length && sel.trim().length > wordMustBeAtLeastThisLong) {
     selectedWord = sel.trim()
     getRhymingWords(selectedWord)
   } else { selectedWord = '' }
 })
 
-const addPopupToPage = (display) => {
-  var container = document.createElement('div')
-  container.id = 'RhymeContainer'
-  container.className = 'rhyme-popup-contain'
-  container.innerHTML =
-    "<div><div class='rhymey-title'>" +
-    'Rhyming with: ' + selectedWord +
-    '</div><br />' +
-    display +
-    '</div>'
-  document.body.appendChild(container)
+document.addEventListener('mouseup', (event) => {
+  if (event.target.closest('.rhyme-popup-contain')) return
+  popup.removeExistingPopup()
+})
+
+const getRhymingWords = (selectedWord) => {
+  fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord) // merge the results of 'nry=' here 
+    .then(response => response.json())
+    .then(json => popup.addToPage(json))
 }
 
-let removePopup = () => {
-  var box = document.querySelector('.rhyme-popup-contain')
-  if (box && box.parentNode) {
-    box.parentNode.removeChild(box)
+var popup = {
+  addToPage: (data) => {
+    let display = 'Nothing found :('
+    if (data.length > 0) {
+      display = ''
+      for (var i = 0; i < data.length; i++) {
+        display += data[i].word + renderSeperator
+      }
+    }
+
+    popup.removeExistingPopup()
+    let container = document.createElement('div')
+    container.id = 'RhymeContainer'
+    container.className = 'rhyme-popup-contain'
+    container.innerHTML =
+      "<div><div class='rhymey-title'>" +
+      'Rhyming with: <span class="word">' + selectedWord + '</span></div><br />' +
+      display.replace(/,\s*$/, '') +
+      '</div>' // Todo: Get a better way of rendering this out
+    document.body.appendChild(container)
+  },
+  removeExistingPopup: () => {
+    let box = document.querySelector('.rhyme-popup-contain')
+    if (box && box.parentNode) {
+      box.parentNode.removeChild(box)
+    }
   }
 }

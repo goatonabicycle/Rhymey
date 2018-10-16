@@ -4,6 +4,10 @@ x Investigate making api calls from a chrome extention.
 - "No rhyme found" state
 - Add "near rhyme" mode. 
 - See what else I can do with the datamuse api.
+    - Near rhyme - rel_nry
+    - Sounds like
+    - Spelled similarly
+    - Homophones (sound-alike words)
 - Show number of rhymes found?
 - Add options
 - Style the popup better.
