@@ -1,0 +1,4 @@
+- Remove jquery
+- Code neatening in general.
+- Style everything better.
+- investigate making api calls from a chrome extention. 
