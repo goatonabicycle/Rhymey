@@ -1,12 +1,12 @@
 x Remove jquery
 x Code neatening in general.
+x Investigate making api calls from a chrome extention. 
 - "No rhyme found" state
---------
-- Investigate making api calls from a chrome extention. 
+- Add "near rhyme" mode. 
+- See what else I can do with the datamuse api.
 - Show number of rhymes found?
---------
 - Add options
-- Style the popup  better.
+- Style the popup better.
 
 
 
