@@ -16,18 +16,18 @@ document.addEventListener('mouseup', (event) => {
 })
 
 const getRhymingWords = (selectedWord) => {
-  fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord) // merge the results of 'nry=' here 
+  fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord) // merge the results of 'nry=' here
     .then(response => response.json())
     .then(json => popup.addToPage(json))
 }
 
-var popup = {
+let popup = {
   addToPage: (data) => {
     let display = 'Nothing found :('
     if (data.length > 0) {
       display = ''
       for (var i = 0; i < data.length; i++) {
-        display += data[i].word + renderSeperator
+        display += '- ' + data[i].word + renderSeperator
       }
     }
 
