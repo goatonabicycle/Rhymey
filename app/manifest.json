@@ -22,7 +22,10 @@
     },
     {
       "js": ["js/googleDocsUtil.js"],
-      "matches": ["https://docs.google.com/document/*"],
+      "matches": [
+        "https://docs.google.com/document/*",
+        "https://mail.google.com/mail/*"
+      ],
       "run_at": "document_idle"
     }
   ],

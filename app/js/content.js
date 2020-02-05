@@ -8,18 +8,15 @@ const getRhymingSelection = () => {
     (window.getSelection && window.getSelection().toString());
 
   if (!sel) {
-    console.log("sel not found");
     sel = googleDocImplementation().getGoogleDocument().selectedText;
-    console.log("sel from Google hack: ", sel);
     // The above is from https://github.com/JensPLarsen/ChromeExtension-GoogleDocsUtil/blob/master/googleDocsUtil.js
   }
   return sel;
 };
 
 document.addEventListener("dblclick", () => {
-  console.log("dblclick");
   let selectedWord = getRhymingSelection();
-  console.log("sel", selectedWord);
+  console.log("Rhymey - selected word: ", selectedWord);
   if (
     selectedWord.length &&
     selectedWord.trim().length > wordMustBeAtLeastThisLong

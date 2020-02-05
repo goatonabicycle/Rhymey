@@ -454,4 +454,4 @@ function googleDocImplementation() {
   };
 }
 
-console.log("DOC LOADEDEDEDED");
+console.log("googleDocImplementation loaded as we're in a google based area");
