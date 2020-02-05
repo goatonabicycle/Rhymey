@@ -6,6 +6,8 @@
   "manifest_version": 2,
   "permissions": [
     "tabs",
+    "declarativeContent",
+    "activeTab",
     "storage",
     "*://*/*",
     "http://*/*",
@@ -14,17 +16,14 @@
   ],
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*",
-        "http://localhost/*"
-      ],
-      "js": [
-        "js/content.js"
-      ],
-      "css": [
-        "css/custom.css"
-      ]
+      "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
+      "js": ["js/content.js"],
+      "css": ["css/custom.css"]
+    },
+    {
+      "js": ["js/googleDocsUtil.js"],
+      "matches": ["https://docs.google.com/document/*"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {

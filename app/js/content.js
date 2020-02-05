@@ -1,77 +1,102 @@
-let selectedWord = ''
-let renderSeperator = '<br/> '
-let wordMustBeAtLeastThisLong = 2
+let selectedWord = "";
+let renderSeperator = "<br/> ";
+let wordMustBeAtLeastThisLong = 2;
 
-document.addEventListener('dblclick', () => {
-  let sel = window.getSelection().toString()
-  if (
-    sel.length &&
-    sel.trim().length > wordMustBeAtLeastThisLong &&
-    sel.indexOf(' ') === -1
-  ) {
-    selectedWord = sel.trim()
-    getRhymingWords(selectedWord)
-  } else {
-    selectedWord = ''
+const getRhymingSelection = () => {
+  var sel =
+    (document.selection && document.selection.createRange().text) ||
+    (window.getSelection && window.getSelection().toString());
+
+  if (!sel) {
+    console.log("sel not found");
+    sel = googleDocImplementation().getGoogleDocument().selectedText;
+    console.log("sel from Google hack: ", sel);
+    // The above is from https://github.com/JensPLarsen/ChromeExtension-GoogleDocsUtil/blob/master/googleDocsUtil.js
   }
-})
+  return sel;
+};
 
-document.addEventListener('mouseup', event => {
-  if (event.target.closest('.rhyme-popup-contain')) return
-  popup.removeExistingPopup()
-})
+document.addEventListener("dblclick", () => {
+  console.log("dblclick");
+  let selectedWord = getRhymingSelection();
+  console.log("sel", selectedWord);
+  if (
+    selectedWord.length &&
+    selectedWord.trim().length > wordMustBeAtLeastThisLong
+  ) {
+    selectedWord = selectedWord.trim();
+    getRhymingWords(selectedWord);
+  } else {
+    selectedWord = "";
+  }
+});
 
-document.addEventListener('keydown', event => {
-  console.log('keydown')
-  popup.removeExistingPopup()
-})
+document.addEventListener("mouseup", event => {
+  if (event.target.closest(".rhyme-popup-contain")) return;
+  popup.removeExistingPopup();
+});
+
+document.addEventListener("keydown", event => {
+  console.log("keydown");
+  popup.removeExistingPopup();
+});
 
 const getRhymingWords = selectedWord => {
-  var requestForRealRhymes = fetch('https://api.datamuse.com/words?rel_rhy=' + selectedWord).then(makeItJson)
-  var requestForNearRhymes = fetch('https://api.datamuse.com/words?rel_nry=' + selectedWord).then(makeItJson)
+  var requestForRealRhymes = fetch(
+    "https://api.datamuse.com/words?rel_rhy=" + selectedWord
+  ).then(makeItJson);
+  var requestForNearRhymes = fetch(
+    "https://api.datamuse.com/words?rel_nry=" + selectedWord
+  ).then(makeItJson);
 
-  Promise.all([requestForRealRhymes, requestForNearRhymes]).then(function (values) {
-    popup.addToPage(values[0], values[1])
-  })
-}
+  Promise.all([requestForRealRhymes, requestForNearRhymes]).then(function(
+    values
+  ) {
+    popup.addToPage(values[0], values[1]);
+  });
+};
 
 let popup = {
   addToPage: (realRhymes, nearRhymes) => {
-    let realRhymesDisplay = getDisplayData(realRhymes)
-    let nearRhymesDisplay = getDisplayData(nearRhymes)
+    let realRhymesDisplay = getDisplayData(realRhymes);
+    let nearRhymesDisplay = getDisplayData(nearRhymes);
 
-    popup.removeExistingPopup()
-    let container = document.createElement('div')
-    container.id = 'RhymeContainer'
-    container.className = 'rhyme-popup-contain'
+    popup.removeExistingPopup();
+    let container = document.createElement("div");
+    container.id = "RhymeContainer";
+    container.className = "rhyme-popup-contain";
     container.innerHTML =
-      '<div>' +
-      '<div class="word">' + selectedWord + '</div><br />' +
+      "<div>" +
+      '<div class="word">' +
+      selectedWord +
+      "</div><br />" +
       '<div class="rhymey-title">Rhymes: </div>' +
-      realRhymesDisplay.replace(/,\s*$/, '') + '<br /><br />' +
+      realRhymesDisplay.replace(/,\s*$/, "") +
+      "<br /><br />" +
       '<div class="rhymey-title">Near rhymes:</div>' +
-      nearRhymesDisplay.replace(/,\s*$/, '') +
-
-      '</div>' // Todo: Get a better way of rendering this out
-    document.body.appendChild(container)
+      nearRhymesDisplay.replace(/,\s*$/, "") +
+      "</div>"; // Todo: Get a better way of rendering this out
+    document.body.appendChild(container);
   },
   removeExistingPopup: () => {
-    let box = document.querySelector('.rhyme-popup-contain')
+    let box = document.querySelector(".rhyme-popup-contain");
     if (box && box.parentNode) {
-      box.parentNode.removeChild(box)
+      box.parentNode.removeChild(box);
     }
   }
-}
+};
 
-const getDisplayData = (data) => {
-  let display = 'Nothing found :('
+const getDisplayData = data => {
+  let display = "Nothing found :(";
   if (data.length > 0) {
-    display = ''
+    display = "";
     for (var i = 0; i < data.length; i++) {
-      display += '- ' + data[i].word + renderSeperator
+      display += "- " + data[i].word + renderSeperator;
     }
   }
-  return display
-}
+  return display;
+};
 
-const makeItJson = (response) => { return response.json() }
+const makeItJson = response => {
+  return response.json();
+};

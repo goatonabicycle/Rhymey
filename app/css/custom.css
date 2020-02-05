@@ -18,14 +18,14 @@
   border-radius: 7px;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
-  -khtml-border-radius: 7px;  
+  -khtml-border-radius: 7px;
 }
 
 .rhymey-title {
   font-weight: bold;
 }
 
-.rhyme-popup-contain .word{
+.rhyme-popup-contain .word {
   color: crimson;
   font-size: 16px;
   text-align: center;
