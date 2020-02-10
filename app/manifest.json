@@ -1,24 +1,16 @@
 {
   "name": "Rhymey",
   "short_name": "Rhymey",
-  "description": "An extension that gets words that rhyme with your selected word. Useful for poetry.",
-  "version": "1.1",
+  "description": "An extension that gets words that rhyme with your selected (double clicked) word. Useful for poetry.",
+  "version": "1.2",
   "manifest_version": 2,
-  "permissions": [
-    "tabs",
-    "declarativeContent",
-    "activeTab",
-    "storage",
-    "*://*/*",
-    "http://*/*",
-    "https://*/*",
-    "http://localhost/*"
-  ],
+  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
       "js": ["js/content.js"],
-      "css": ["css/custom.css"]
+      "css": ["css/custom.css"],
+      "run_at": "document_idle"
     },
     {
       "js": ["js/googleDocsUtil.js"],

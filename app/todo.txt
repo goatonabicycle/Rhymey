@@ -21,6 +21,9 @@ x Add "near rhyme" mode - rel_nry
 
 - Make this github page nice with instructions on how to set it up and get it running
 
+- v1.2
+    Now works with Google based documents.
+
 - v1.1
     Minor fixes - don't check on phrases, clear on backspace, near rhyme mode.
 

@@ -454,4 +454,6 @@ function googleDocImplementation() {
   };
 }
 
-console.log("googleDocImplementation loaded as we're in a google based area");
+console.log(
+  "Rhymey - googleDocImplementation loaded as we're in a google based area"
+);

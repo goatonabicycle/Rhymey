@@ -10,6 +10,7 @@ const getRhymingSelection = () => {
   if (!sel) {
     sel = googleDocImplementation().getGoogleDocument().selectedText;
     // The above is from https://github.com/JensPLarsen/ChromeExtension-GoogleDocsUtil/blob/master/googleDocsUtil.js
+    // This allows the user to actually use this in a google environment.
   }
   return sel;
 };
