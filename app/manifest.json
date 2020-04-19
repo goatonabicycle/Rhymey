@@ -4,7 +4,6 @@
   "description": "An extension that gets words that rhyme with your selected (double clicked) word. Useful for poetry.",
   "version": "1.2",
   "manifest_version": 2,
-  "permissions": ["activeTab"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
