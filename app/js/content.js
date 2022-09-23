@@ -1,6 +1,6 @@
 let selectedWord = "";
-let renderSeperator = "<br/> ";
-let wordMustBeAtLeastThisLong = 2;
+const renderSeperator = ", ";
+const wordMustBeAtLeastThisLong = 1;
 
 const getRhymingSelection = () => {
   var sel =
@@ -16,6 +16,7 @@ const getRhymingSelection = () => {
 };
 
 document.addEventListener("dblclick", () => {
+  // Todo: Add a loading indicator here
   let selectedWord = getRhymingSelection();
   console.log("Rhymey - selected word: ", selectedWord);
   if (
@@ -29,17 +30,17 @@ document.addEventListener("dblclick", () => {
   }
 });
 
-document.addEventListener("mouseup", event => {
+document.addEventListener("mouseup", (event) => {
   if (event.target.closest(".rhyme-popup-contain")) return;
   popup.removeExistingPopup();
 });
 
-document.addEventListener("keydown", event => {
+document.addEventListener("keydown", (event) => {
   console.log("keydown");
   popup.removeExistingPopup();
 });
 
-const getRhymingWords = selectedWord => {
+const getRhymingWords = (selectedWord) => {
   var requestForRealRhymes = fetch(
     "https://api.datamuse.com/words?rel_rhy=" + selectedWord
   ).then(makeItJson);
@@ -47,54 +48,55 @@ const getRhymingWords = selectedWord => {
     "https://api.datamuse.com/words?rel_nry=" + selectedWord
   ).then(makeItJson);
 
-  Promise.all([requestForRealRhymes, requestForNearRhymes]).then(function(
+  Promise.all([requestForRealRhymes, requestForNearRhymes]).then(function (
     values
   ) {
-    popup.addToPage(values[0], values[1]);
+    popup.addToPage(selectedWord, values[0], values[1]);
   });
 };
 
 let popup = {
-  addToPage: (realRhymes, nearRhymes) => {
+  addToPage: (selectedWord, realRhymes, nearRhymes) => {
     let realRhymesDisplay = getDisplayData(realRhymes);
     let nearRhymesDisplay = getDisplayData(nearRhymes);
 
     popup.removeExistingPopup();
+
     let container = document.createElement("div");
     container.id = "RhymeContainer";
     container.className = "rhyme-popup-contain";
-    container.innerHTML =
-      "<div>" +
-      '<div class="word">' +
-      selectedWord +
-      "</div><br />" +
-      '<div class="rhymey-title">Rhymes: </div>' +
-      realRhymesDisplay.replace(/,\s*$/, "") +
-      "<br /><br />" +
-      '<div class="rhymey-title">Near rhymes:</div>' +
-      nearRhymesDisplay.replace(/,\s*$/, "") +
-      "</div>"; // Todo: Get a better way of rendering this out
+
+    container.innerHTML = `
+    <div>
+        <div class="rhymey-word">${selectedWord}</div>
+        <div class="rhymey-title">Rhymes: </div>
+            ${realRhymesDisplay.replace(/,\s*$/, "")}    
+        <div class="rhymey-title">Near rhymes:</div>
+            ${nearRhymesDisplay.replace(/,\s*$/, "")}
+        </div>
+    </div>`;
     document.body.appendChild(container);
   },
+
   removeExistingPopup: () => {
     let box = document.querySelector(".rhyme-popup-contain");
     if (box && box.parentNode) {
       box.parentNode.removeChild(box);
     }
-  }
+  },
 };
 
-const getDisplayData = data => {
-  let display = "Nothing found :(";
+const getDisplayData = (data) => {
+  let display = "Nothing found.";
   if (data.length > 0) {
     display = "";
     for (var i = 0; i < data.length; i++) {
-      display += "- " + data[i].word + renderSeperator;
+      display += "" + data[i].word + renderSeperator;
     }
   }
   return display;
 };
 
-const makeItJson = response => {
+const makeItJson = (response) => {
   return response.json();
 };
