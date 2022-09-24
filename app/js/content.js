@@ -41,38 +41,54 @@ document.addEventListener("keydown", (event) => {
 });
 
 const getRhymingWords = (selectedWord) => {
-  var requestForRealRhymes = fetch(
+  let requestForRealRhymes = fetch(
     "https://api.datamuse.com/words?rel_rhy=" + selectedWord
   ).then(makeItJson);
-  var requestForNearRhymes = fetch(
+  let requestForNearRhymes = fetch(
     "https://api.datamuse.com/words?rel_nry=" + selectedWord
   ).then(makeItJson);
 
-  Promise.all([requestForRealRhymes, requestForNearRhymes]).then(function (
-    values
-  ) {
-    popup.addToPage(selectedWord, values[0], values[1]);
+  let requestForSimilarMeaning = fetch(
+    "https://api.datamuse.com/words?ml=" + selectedWord
+  ).then(makeItJson);
+
+  Promise.all([
+    requestForRealRhymes,
+    requestForNearRhymes,
+    requestForSimilarMeaning,
+  ]).then(function (values) {
+    popup.addToPage(selectedWord, values[0], values[1], values[2]);
   });
 };
 
 let popup = {
-  addToPage: (selectedWord, realRhymes, nearRhymes) => {
+  addToPage: (selectedWord, realRhymes, nearRhymes, similarMeaning) => {
     let realRhymesDisplay = getDisplayData(realRhymes);
     let nearRhymesDisplay = getDisplayData(nearRhymes);
+    let similarMeaningDisplay = getDisplayData(similarMeaning);
 
     popup.removeExistingPopup();
 
     let container = document.createElement("div");
     container.id = "RhymeContainer";
-    container.className = "rhyme-popup-contain";
+    container.className = "rhymey-popup-contain";
 
     container.innerHTML = `
     <div>
         <div class="rhymey-word">${selectedWord}</div>
+        
         <div class="rhymey-title">Rhymes: </div>
-            ${realRhymesDisplay.replace(/,\s*$/, "")}    
+        <div class="rhymey-content">
+          ${realRhymesDisplay.replace(/,\s*$/, "")}
+        </div>
+
         <div class="rhymey-title">Near rhymes:</div>
-            ${nearRhymesDisplay.replace(/,\s*$/, "")}
+        <div class="rhymey-content">
+          ${nearRhymesDisplay.replace(/,\s*$/, "")}
+        </div>
+        <div class="rhymey-title">Similar meaning:</div>
+        <div class="rhymey-content">
+          ${similarMeaningDisplay.replace(/,\s*$/, "")}
         </div>
     </div>`;
     document.body.appendChild(container);

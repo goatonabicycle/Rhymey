@@ -1,6 +1,7 @@
-﻿.rhyme-popup-contain {
+﻿.rhymey-popup-contain {
   background-color: wheat;
   position: fixed;  
+  color: black;
   display: inline-flex;
   font-family: "Questrial", sans-serif;
   font-size: 12px;  
@@ -32,7 +33,9 @@
 
 .rhymey-title {
   font-weight: bold;
+  border-bottom: 1px solid black;
   margin-top: 20px;
+  text-align: center;
 }
 
 .rhymey-word {
@@ -44,22 +47,27 @@
   text-align: center;
 }
 
-
 /* custom scrollbar */
-.rhyme-popup-contain::-webkit-scrollbar {
+.rhymey-popup-contain .rhymey-content::-webkit-scrollbar {
   width: 20px;
 }
 
-.rhyme-popup-contain::-webkit-scrollbar-track {
+.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
-.rhyme-popup-contain::-webkit-scrollbar-thumb {
+.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-thumb {
   background-color: darkgray;  
   border: 6px solid transparent;
   background-clip: content-box;
 }
 
-.rhyme-popup-contain::-webkit-scrollbar-thumb:hover {
+.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-thumb:hover {
   background-color: #a8bbbf;
+}
+
+.rhymey-content {  
+  max-height: 300px;
+  overflow: hidden;  
+  overflow-y: auto;
 }
