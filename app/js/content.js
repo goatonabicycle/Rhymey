@@ -31,7 +31,7 @@ document.addEventListener("dblclick", () => {
 });
 
 document.addEventListener("mouseup", (event) => {
-  if (event.target.closest(".rhyme-popup-contain")) return;
+  if (event.target.closest(".rhymey-popup-contain")) return;
   popup.removeExistingPopup();
 });
 
@@ -95,7 +95,7 @@ let popup = {
   },
 
   removeExistingPopup: () => {
-    let box = document.querySelector(".rhyme-popup-contain");
+    let box = document.querySelector(".rhymey-popup-contain");
     if (box && box.parentNode) {
       box.parentNode.removeChild(box);
     }
