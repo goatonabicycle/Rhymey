@@ -24,7 +24,7 @@ document.addEventListener("dblclick", () => {
     selectedWord.trim().length > wordMustBeAtLeastThisLong
   ) {
     selectedWord = selectedWord.trim();
-    getRhymingWords(selectedWord);
+    getInfoAbout(selectedWord);
   } else {
     selectedWord = "";
   }
@@ -40,9 +40,9 @@ document.addEventListener("keydown", (event) => {
   popup.removeExistingPopup();
 });
 
-const getRhymingWords = (selectedWord) => {
+const getInfoAbout = (selectedWord) => {
   let requestForRealRhymes = fetch(
-    "https://api.datamuse.com/words?rel_rhy=" + selectedWord
+    "https://api.datamuse.com/words?rel_rhy=" + selectedWord + "&md=d"
   ).then(makeItJson);
   let requestForNearRhymes = fetch(
     "https://api.datamuse.com/words?rel_nry=" + selectedWord
@@ -52,44 +52,46 @@ const getRhymingWords = (selectedWord) => {
     "https://api.datamuse.com/words?ml=" + selectedWord
   ).then(makeItJson);
 
+  let requestForRelated = fetch(
+    "https://api.datamuse.com/words?rel_trg=" + selectedWord
+  ).then(makeItJson);
+
   Promise.all([
     requestForRealRhymes,
     requestForNearRhymes,
     requestForSimilarMeaning,
-  ]).then(function (values) {
-    popup.addToPage(selectedWord, values[0], values[1], values[2]);
+    requestForRelated,
+  ]).then(function (results) {
+    popup.addToPage(
+      selectedWord,
+      results[0],
+      results[1],
+      results[2],
+      results[3]
+    );
   });
 };
 
 let popup = {
-  addToPage: (selectedWord, realRhymes, nearRhymes, similarMeaning) => {
-    let realRhymesDisplay = getDisplayData(realRhymes);
-    let nearRhymesDisplay = getDisplayData(nearRhymes);
-    let similarMeaningDisplay = getDisplayData(similarMeaning);
-
+  addToPage: (
+    selectedWord,
+    realRhymes,
+    nearRhymes,
+    similarMeaning,
+    related
+  ) => {
     popup.removeExistingPopup();
 
     let container = document.createElement("div");
     container.id = "RhymeContainer";
     container.className = "rhymey-popup-contain";
-
     container.innerHTML = `
     <div>
         <div class="rhymey-word">${selectedWord}</div>
-        
-        <div class="rhymey-title">Rhymes: </div>
-        <div class="rhymey-content">
-          ${realRhymesDisplay.replace(/,\s*$/, "")}
-        </div>
-
-        <div class="rhymey-title">Near rhymes:</div>
-        <div class="rhymey-content">
-          ${nearRhymesDisplay.replace(/,\s*$/, "")}
-        </div>
-        <div class="rhymey-title">Similar meaning:</div>
-        <div class="rhymey-content">
-          ${similarMeaningDisplay.replace(/,\s*$/, "")}
-        </div>
+        ${renderBlock("Rhymes", realRhymes)}
+        ${renderBlock("Near Rhymes", nearRhymes)}
+        ${renderBlock("Similar meaning", similarMeaning)}
+        ${renderBlock("Related", related)}
     </div>`;
     document.body.appendChild(container);
   },
@@ -102,15 +104,19 @@ let popup = {
   },
 };
 
-const getDisplayData = (data) => {
+const renderBlock = (title, data) => {
   let display = "Nothing found.";
   if (data.length > 0) {
     display = "";
-    for (var i = 0; i < data.length; i++) {
-      display += "" + data[i].word + renderSeperator;
+    for (const item of data) {
+      display += "" + item.word + renderSeperator;
     }
   }
-  return display;
+
+  return ` <div class="rhymey-title">${title}</div>
+  <div class="rhymey-content">
+    ${display.replace(/,\s*$/, "")}
+  </div>`;
 };
 
 const makeItJson = (response) => {
