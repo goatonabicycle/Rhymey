@@ -1,5 +1,5 @@
 ﻿.rhymey-popup-contain {
-  background-color: wheat;
+  background-color: wheat;  
   position: fixed;  
   color: black;
   display: inline-flex;
@@ -7,7 +7,7 @@
   font-size: 12px;  
   border: 2px solid black;
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 1rem 1rem;
+  padding: 10px 10px;
   top: 10px;
   right: 20px;
   width: 160px;
@@ -15,7 +15,7 @@
   margin-bottom: 20px;
   overflow: hidden;  
   overflow-y: auto;
-  z-index: 99999;
+  z-index: 9999999 !important;
   animation: move 0.5s forwards linear;  
 }
 
@@ -35,7 +35,7 @@
   font-weight: bold;
   border-bottom: 1px solid black;
   margin-top: 20px;
-  text-align: center;
+  margin-bottom:5px;  
 }
 
 .rhymey-word {
@@ -48,26 +48,25 @@
 }
 
 /* custom scrollbar */
-.rhymey-popup-contain .rhymey-content::-webkit-scrollbar {
+.rhymey-popup-contain::-webkit-scrollbar {
   width: 20px;
 }
 
-.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-track {
+.rhymey-popup-contain::-webkit-scrollbar-track {
   background-color: transparent;
 }
 
-.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-thumb {
+.rhymey-popup-contain::-webkit-scrollbar-thumb {
   background-color: darkgray;  
   border: 6px solid transparent;
   background-clip: content-box;
 }
 
-.rhymey-popup-contain .rhymey-content::-webkit-scrollbar-thumb:hover {
+.rhymey-popup-contain::-webkit-scrollbar-thumb:hover {
   background-color: #a8bbbf;
 }
 
-.rhymey-content {  
-  max-height: 300px;
+.rhymey-content {    
   overflow: hidden;  
   overflow-y: auto;
 }
