@@ -9,6 +9,7 @@
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
   padding: 10px 10px;
   top: 10px;
+  line-height: 110% !important;
   right: 20px;
   width: 160px;
   max-height: 95%;  
@@ -16,6 +17,8 @@
   overflow: hidden;  
   overflow-y: auto;
   z-index: 9999999 !important;
+  webkit-box-sizing: unset;
+  box-sizing: unset;
   animation: move 0.5s forwards linear;  
 }
 
