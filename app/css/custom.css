@@ -1,11 +1,12 @@
 ﻿.rhymey-popup-contain {
+  resize: both;
   background-color: wheat;  
   position: fixed;  
   color: black;
   display: inline-flex;
-  font-family: "Questrial", sans-serif;
-  font-size: 12px;  
-  border: 2px solid black;
+  font-family: "Questrial", sans-serif !important;
+  font-size: 13px !important;  
+  border: 3px solid black;
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
   padding: 10px 10px;
   top: 10px;
@@ -69,4 +70,8 @@
 .rhymey-content {    
   overflow: hidden;  
   overflow-y: auto;
+}
+
+.rhymey-hover:hover {  
+ text-decoration: underline;
 }

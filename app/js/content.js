@@ -8,7 +8,7 @@ const getRhymingSelection = () => {
     (window.getSelection && window.getSelection().toString());
 
   if (!sel) {
-    sel = googleDocImplementation().getGoogleDocument().selectedText;
+    sel = googleDocImplementation();
     // The above is from https://github.com/JensPLarsen/ChromeExtension-GoogleDocsUtil/blob/master/googleDocsUtil.js
     // This allows the user to actually use this in a google environment.
   }
@@ -109,11 +109,11 @@ const renderBlock = (title, data) => {
   if (data.length > 0) {
     display = "";
     for (const item of data) {
-      display += "" + item.word + renderSeperator;
+      display += `<span class='rhymey-hover'>${item.word}</span>${renderSeperator}`;
     }
   }
 
-  return ` <div class="rhymey-title">${title}</div>
+  return ` <div class="rhymey-title">${title} ${data.length}</div>
   <div class="rhymey-content">
     ${display.replace(/,\s*$/, "")}
   </div>`;
