@@ -1,16 +1,17 @@
+window._docs_force_html_by_ext = true;
+
 let selectedWord = "";
 const renderSeperator = ", ";
 const wordMustBeAtLeastThisLong = 1;
 
 const getRhymingSelection = () => {
-  var sel =
+  const sel =
     (document.selection && document.selection.createRange().text) ||
     (window.getSelection && window.getSelection().toString());
 
   if (!sel) {
-    sel = googleDocImplementation().getGoogleDocument().selectedText;
-    // The above is from https://github.com/JensPLarsen/ChromeExtension-GoogleDocsUtil/blob/master/googleDocsUtil.js
-    // This allows the user to actually use this in a google environment.
+    console.log("Rhymey was not able to get your selected word.");
+    console.log("Support for Google Docs documents should be coming soon!");
   }
   return sel;
 };
