@@ -1,24 +1,33 @@
-window._docs_force_html_by_ext = true;
+const injectedCode = `(function() {window[‘_docs_annotate_canvas_by_ext’] = '${chrome.runtime.id}';})();`;
+
+const script = document.createElement("script");
+script.textContent = injectedCode;
+(document.head || document.documentElement).appendChild(script);
+script.remove();
+
+// For more details on the above go here: https://sites.google.com/google.com/docs-canvas-migration/home
 
 let selectedWord = "";
 const renderSeperator = ", ";
 const wordMustBeAtLeastThisLong = 1;
 
-const getRhymingSelection = () => {
-  const sel =
+const getRhymingSelection = (event) => {
+  let selectedText =
     (document.selection && document.selection.createRange().text) ||
     (window.getSelection && window.getSelection().toString());
 
-  if (!sel) {
-    console.log("Rhymey was not able to get your selected word.");
-    console.log("Support for Google Docs documents should be coming soon!");
+  if (!selectedText) {
+    console.log(
+      "Rhymey was not able to get your selected word. That probably means you're using Google Docs! Let's see if we can hack together some magic to get that working."
+    );
+    selectedText = getWordFromGoogleDocs(event);
   }
-  return sel;
+  return selectedText;
 };
 
 document.addEventListener("dblclick", (event) => {
   // Todo: Add a loading indicator here?
-  let selectedWord = getRhymingSelection();
+  let selectedWord = getRhymingSelection(event);
   console.log("Rhymey - selected word: ", selectedWord);
   if (
     selectedWord.length &&
@@ -27,25 +36,47 @@ document.addEventListener("dblclick", (event) => {
     selectedWord = selectedWord.trim();
     getInfoAbout(selectedWord);
   } else {
-    selectedWord = getWordFromGoogleDocs(event);
+    selectedWord = "";
   }
 });
 
 function getWordFromGoogleDocs(event) {
-  let result = "";
-
   const mousePosition = getMousePosition(
     document.querySelector("canvas"),
     event
   );
 
-  const elem = document.elementFromPoint(mousePosition.x, mousePosition.y);
+  console.log({ mousePosition });
 
-  // There's more to do here. Much more.
+  const allNodesInThisDoc = document.querySelectorAll(
+    ".kix-canvas-tile-content svg>g>rect"
+  );
 
-  console.log({ elem });
+  for (let i = 0; i < allNodesInThisDoc.length; i++) {
+    const node = allNodesInThisDoc[i];
+    console.log({ node });
+    const nodeText = node.ariaLabel;
+    const rect = node.getBoundingClientRect();
 
-  return result;
+    const x = node.attributes["x"].value;
+    const y = node.attributes["y"].value;
+    const width = rect.width;
+    const height = rect.height;
+
+    // Check if the clicked coordinates are within the bounds of the text element
+    if (
+      mousePosition.x >= x &&
+      mousePosition.x <= x + width &&
+      mousePosition.y >= y &&
+      mousePosition.y <= y + height
+    ) {
+      return nodeText;
+    }
+
+    console.log({ nodeText, rect, x, y, width, height });
+  }
+
+  return "";
 }
 
 function getMousePosition(canvas, event) {

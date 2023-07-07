@@ -4,29 +4,14 @@
   "description": "The easiest and best way of getting words that rhyme with the word you double clicked on!",
   "version": "2",
   "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js"
-  },
   "host_permissions": ["https://*.google.com/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
       "js": ["js/content.js"],
       "css": ["css/custom.css"],
-      "run_at": "document_idle"
-    },
-    {
-      "all_frames": false,
-      "match_about_blank": false,
-      "js": ["document-start.js"],
-      "matches": ["https://docs.google.com/*"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["https://docs.google.com/*"],
       "run_at": "document_start",
-      "js": ["js/gdocs.js"],
-      "world": "MAIN"
+      "all_frames": true
     }
   ],
   "permissions": ["activeTab", "tabs", "scripting"],
@@ -34,11 +19,5 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["js/htmlMode.js"],
-      "matches": ["https://docs.google.com/*"]
-    }
-  ]
+  }
 }
