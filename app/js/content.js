@@ -46,36 +46,38 @@ function getWordFromGoogleDocs(event) {
     event
   );
 
-  console.log({ mousePosition });
-
   const allNodesInThisDoc = document.querySelectorAll(
     ".kix-canvas-tile-content svg>g>rect"
   );
 
   for (let i = 0; i < allNodesInThisDoc.length; i++) {
     const node = allNodesInThisDoc[i];
-    console.log({ node });
-    const nodeText = node.ariaLabel;
-    const rect = node.getBoundingClientRect();
+    const nodeText = node.getAttribute("aria-label");
+    const transformMatrix = node.getAttribute("transform");
+    const matrixValues = transformMatrix
+      .match(/matrix\(([^)]+)\)/)[1]
+      .split(",");
 
-    const x = node.attributes["x"].value;
-    const y = node.attributes["y"].value;
-    const width = rect.width;
-    const height = rect.height;
+    const translateX = parseFloat(matrixValues[4]);
+    const translateY = parseFloat(matrixValues[5]);
 
-    // Check if the clicked coordinates are within the bounds of the text element
+    const x = parseFloat(node.getAttribute("x")) + translateX;
+    const y = parseFloat(node.getAttribute("y")) + translateY;
+    const width = parseFloat(node.getAttribute("width"));
+    const height = parseFloat(node.getAttribute("height"));
+
+    console.log({ nodeText, rect, x, y, width, height });
     if (
       mousePosition.x >= x &&
       mousePosition.x <= x + width &&
       mousePosition.y >= y &&
       mousePosition.y <= y + height
     ) {
+      console.log("Clicked word:", nodeText);
+
       return nodeText;
     }
-
-    console.log({ nodeText, rect, x, y, width, height });
   }
-
   return "";
 }
 
@@ -83,8 +85,7 @@ function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let x = event.clientX - rect.left;
   let y = event.clientY - rect.top;
-
-  console.log("x: " + x, "y: " + y);
+  console.log("Mouse -> x: " + x, "y: " + y);
 
   return { x, y };
 }
