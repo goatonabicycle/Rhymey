@@ -40,54 +40,75 @@ document.addEventListener("dblclick", (event) => {
   }
 });
 
-function getWordFromGoogleDocs(event) {
-  const mousePosition = getMousePosition(
-    document.querySelector("canvas"),
-    event
-  );
+// Extracts matrix values from transform attribute
+function extractMatrixValues(transformMatrix) {
+  // This removes the 'matrix(' from the start and ')' from the end and split the string by comma to get an array of values
+  const matrixValues = transformMatrix.slice(7, -1).split(",");
 
-  const allNodesInThisDoc = document.querySelectorAll(
-    ".kix-canvas-tile-content svg>g>rect"
-  );
-
-  for (let i = 0; i < allNodesInThisDoc.length; i++) {
-    const node = allNodesInThisDoc[i];
-    const nodeText = node.getAttribute("aria-label");
-    const transformMatrix = node.getAttribute("transform");
-    const matrixValues = transformMatrix
-      .match(/matrix\(([^)]+)\)/)[1]
-      .split(",");
-
-    const translateX = parseFloat(matrixValues[4]);
-    const translateY = parseFloat(matrixValues[5]);
-
-    const x = parseFloat(node.getAttribute("x")) + translateX;
-    const y = parseFloat(node.getAttribute("y")) + translateY;
-    const width = parseFloat(node.getAttribute("width"));
-    const height = parseFloat(node.getAttribute("height"));
-
-    console.log({ nodeText, x, y, width, height });
-    if (
-      mousePosition.x >= x &&
-      mousePosition.x <= x + width &&
-      mousePosition.y >= y &&
-      mousePosition.y <= y + height
-    ) {
-      console.log("Clicked word:", nodeText);
-
-      return nodeText;
-    }
-  }
-  return "";
+  return {
+    translateX: parseFloat(matrixValues[4]),
+    translateY: parseFloat(matrixValues[5]),
+  };
 }
 
 function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let x = event.clientX - rect.left;
   let y = event.clientY - rect.top;
-  console.log("Mouse -> x: " + x, "y: " + y);
-
   return { x, y };
+}
+
+function isWithinWordBounds(mousePos, wordBounds) {
+  const { x, y } = mousePos;
+  const { startX, endX, startY, endY } = wordBounds;
+
+  return x >= startX && x <= endX && y >= startY && y <= endY;
+}
+
+// Fetches word from Google Docs
+function getWordFromGoogleDocs(event) {
+  const canvas = document.querySelector("canvas");
+  const mousePosition = getMousePosition(canvas, event);
+  const allNodesInThisDoc = document.querySelectorAll(
+    ".kix-canvas-tile-content svg>g>rect"
+  );
+  const ctx = canvas.getContext("2d");
+
+  for (let node of allNodesInThisDoc) {
+    const nodeText = node.getAttribute("aria-label");
+    const transformMatrix = node.getAttribute("transform");
+    const fontCSS = node.getAttribute("data-font-css");
+
+    ctx.font = fontCSS;
+
+    const { translateX, translateY } = extractMatrixValues(transformMatrix);
+    const x = parseFloat(node.getAttribute("x")) + translateX;
+    const y = parseFloat(node.getAttribute("y")) + translateY;
+    const height = parseFloat(node.getAttribute("height"));
+
+    const words = nodeText.split(" ");
+    let wordStartX = x;
+
+    for (let word of words) {
+      const wordWidth = ctx.measureText(word).width;
+
+      const wordBounds = {
+        startX: wordStartX,
+        endX: wordStartX + wordWidth,
+        startY: y,
+        endY: y + height,
+      };
+
+      if (isWithinWordBounds(mousePosition, wordBounds)) {
+        console.log("Clicked word:", word);
+        return word;
+      }
+
+      wordStartX += wordWidth + ctx.measureText(" ").width;
+    }
+  }
+
+  return "";
 }
 
 document.addEventListener("mouseup", (event) => {
