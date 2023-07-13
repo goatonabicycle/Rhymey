@@ -66,7 +66,7 @@ function getWordFromGoogleDocs(event) {
     const width = parseFloat(node.getAttribute("width"));
     const height = parseFloat(node.getAttribute("height"));
 
-    console.log({ nodeText, rect, x, y, width, height });
+    console.log({ nodeText, x, y, width, height });
     if (
       mousePosition.x >= x &&
       mousePosition.x <= x + width &&
