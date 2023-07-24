@@ -51,6 +51,54 @@ function extractMatrixValues(transformMatrix) {
   };
 }
 
+// -----------------------------------------------------
+
+const getSelectedText = function () {
+  const overlaps = (a, b) =>
+    a.left < b.right &&
+    a.right > b.left &&
+    a.top < b.bottom &&
+    a.bottom > b.top;
+  const page = getCurrentlyVisiblePage(getPages());
+  const selectionRects = Array.from(
+    page.querySelectorAll(".kix-canvas-tile-selection > svg > rect")
+  ).map((el) => el.getBoundingClientRect());
+  return Array.from(page.querySelectorAll("svg > g[role=paragraph] > rect"))
+    .map((el) => ({ el: el, rect: el.getBoundingClientRect() }))
+    .filter((item) => selectionRects.some((rect) => overlaps(item.rect, rect)))
+    .map((item) => item.el.getAttribute("aria-label"))
+    .filter(makeDeduper())
+    .join(" ");
+};
+
+function getPages() {
+  const pages = Array.from(document.querySelectorAll(".kix-page-paginated"));
+
+  return pages
+    .map((page) => ({ page: page, top: page.getBoundingClientRect().top }))
+    .sort((a, b) => a.top - b.top)
+    .map((item) => item.page);
+}
+
+function getCurrentlyVisiblePage(pages) {
+  const halfHeight = window.innerHeight / 2;
+  for (var i = pages.length - 1; i >= 0; i--) {
+    if (pages[i].getBoundingClientRect().top < halfHeight) return pages[i];
+  }
+  throw new Error("Can't get the currently visible page");
+}
+
+function makeDeduper() {
+  let prev;
+  return function (text) {
+    if (text == prev) return false;
+    prev = text;
+    return true;
+  };
+}
+
+// -----------------------------------------------------
+
 function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let x = event.clientX - rect.left;
@@ -69,9 +117,19 @@ function isWithinWordBounds(mousePos, wordBounds) {
 function getWordFromGoogleDocs(event) {
   const canvas = document.querySelector("canvas");
   const mousePosition = getMousePosition(canvas, event);
-  const allNodesInThisDoc = document.querySelectorAll(
+
+  const pages = getPages();
+  console.log({ pages });
+
+  const page = getCurrentlyVisiblePage(pages);
+  console.log({ page });
+
+  const allNodesInThisDoc = page.querySelectorAll(
     ".kix-canvas-tile-content svg>g>rect"
   );
+
+  console.log("allNodesInThisDoc.length:", allNodesInThisDoc.length);
+
   const ctx = canvas.getContext("2d");
 
   for (let node of allNodesInThisDoc) {
