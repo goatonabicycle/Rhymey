@@ -115,66 +115,69 @@ function isWithinWordBounds(mousePos, wordBounds) {
 
 // Fetches word from Google Docs
 function getWordFromGoogleDocs(event) {
-  const canvas = document.querySelector("canvas");
+  const canvases = document.querySelectorAll("canvas");
+  console.log("canvases:", canvases);
 
-  const pages = getPages();
-  console.log("all pages: ", pages);
+  let clickedWord = "";
 
-  const page = getCurrentlyVisiblePage(pages);
-  console.log("current page: ", page);
+  for (let i = 0; i < canvases.length; i++) {
+    const canvas = canvases[i];
+    const mousePosition = getMousePosition(canvas, event);
+    const allNodesInThisDoc = document.querySelectorAll(
+      ".kix-canvas-tile-content svg>g>rect"
+    );
+    console.log("allNodesInThisDoc.length:", allNodesInThisDoc.length);
 
-  const mousePosition = getMousePosition(page, event);
+    const ctx = canvas.getContext("2d");
+    let log = [];
 
-  const allNodesInThisDoc = document.querySelectorAll(
-    ".kix-canvas-tile-content svg>g>rect"
-  );
+    for (let node of allNodesInThisDoc) {
+      const nodeText = node.getAttribute("aria-label");
+      const transformMatrix = node.getAttribute("transform");
+      const fontCSS = node.getAttribute("data-font-css");
 
-  console.log("allNodesInThisDoc.length:", allNodesInThisDoc.length);
+      ctx.font = fontCSS;
 
-  const ctx = canvas.getContext("2d");
+      const { translateX, translateY } = extractMatrixValues(transformMatrix);
+      const x = parseFloat(node.getAttribute("x")) + translateX;
+      const y = parseFloat(node.getAttribute("y")) + translateY;
+      const height = parseFloat(node.getAttribute("height"));
 
-  let log = [];
+      const words = nodeText.split(" ");
+      let wordStartX = x;
 
-  for (let node of allNodesInThisDoc) {
-    const nodeText = node.getAttribute("aria-label");
-    const transformMatrix = node.getAttribute("transform");
-    const fontCSS = node.getAttribute("data-font-css");
+      for (let word of words) {
+        const wordWidth = ctx.measureText(word).width;
+        const wordBounds = {
+          startX: wordStartX,
+          endX: wordStartX + wordWidth,
+          startY: y,
+          endY: y + height,
+        };
 
-    ctx.font = fontCSS;
+        if (isWithinWordBounds(mousePosition, wordBounds)) {
+          console.log("Clicked word:", word);
+          console.log({ mousePosition, word, wordWidth, wordBounds });
+          clickedWord = word;
+          break;
+        }
 
-    const { translateX, translateY } = extractMatrixValues(transformMatrix);
-    const x = parseFloat(node.getAttribute("x")) + translateX;
-    const y = parseFloat(node.getAttribute("y")) + translateY;
-    const height = parseFloat(node.getAttribute("height"));
+        log.push({ mousePosition, word, wordWidth, wordBounds });
 
-    const words = nodeText.split(" ");
-    let wordStartX = x;
-
-    for (let word of words) {
-      const wordWidth = ctx.measureText(word).width;
-
-      const wordBounds = {
-        startX: wordStartX,
-        endX: wordStartX + wordWidth,
-        startY: y,
-        endY: y + height,
-      };
-
-      if (isWithinWordBounds(mousePosition, wordBounds)) {
-        console.log("Clicked word:", word);
-        console.log({ mousePosition, word, wordWidth, wordBounds });
-        return word;
+        wordStartX += wordWidth + ctx.measureText(" ").width;
       }
 
-      log.push({ mousePosition, word, wordWidth, wordBounds });
+      if (clickedWord !== "") {
+        break;
+      }
+    }
 
-      wordStartX += wordWidth + ctx.measureText(" ").width;
+    if (clickedWord !== "") {
+      break;
     }
   }
 
-  console.log({ log });
-
-  return "";
+  return clickedWord;
 }
 
 document.addEventListener("mouseup", (event) => {
