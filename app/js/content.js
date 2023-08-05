@@ -120,13 +120,14 @@ function getWordFromGoogleDocs(event) {
 
   let clickedWord = "";
 
-  for (let i = 0; i < canvases.length; i++) {
+  for (let i = canvases.length - 1; i >= 0; i--) {
     const canvas = canvases[i];
+    console.log("canvas:", canvas);
     const mousePosition = getMousePosition(canvas, event);
     const allNodesInThisDoc = document.querySelectorAll(
       ".kix-canvas-tile-content svg>g>rect"
     );
-    console.log("allNodesInThisDoc.length:", allNodesInThisDoc.length);
+    // console.log("allNodesInThisDoc.length:", allNodesInThisDoc.length);
 
     const ctx = canvas.getContext("2d");
     let log = [];
@@ -156,8 +157,14 @@ function getWordFromGoogleDocs(event) {
         };
 
         if (isWithinWordBounds(mousePosition, wordBounds)) {
-          console.log("Clicked word:", word);
+          console.log(
+            "--------------------------------------------------------"
+          );
           console.log({ mousePosition, word, wordWidth, wordBounds });
+          console.log("Clicked word:", word);
+          console.log(
+            "--------------------------------------------------------"
+          );
           clickedWord = word;
           break;
         }
