@@ -1,0 +1,4 @@
+- Finish up the logic to get this working in Google Docs. 
+    Currently the challange is that pages get returned in a nonsensical order. This makes the complex logic of getting the word that a user clicked on much more complex. 
+- Add the vite mechanism from the "Things on this page" project
+- Release a v3. 
