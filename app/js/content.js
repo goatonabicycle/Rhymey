@@ -103,6 +103,14 @@ function getMousePosition(canvas, event) {
   let rect = canvas.getBoundingClientRect();
   let x = event.clientX - rect.left;
   let y = event.clientY - rect.top;
+
+  // This super doesn't work when used with page breaks. Sigh.
+  // const cursor = document.querySelector("#kix-current-user-cursor-caret");
+  // const cursorBbox = cursor.getBoundingClientRect();
+  // const x = Math.floor(cursorBbox.right);
+  // const y = Math.floor(cursorBbox.top);
+  // const rect = document.elementFromPoint(x, y);
+
   return { x, y };
 }
 
