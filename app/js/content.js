@@ -1,12 +1,3 @@
-const injectedCode = `(function() {window[‘_docs_annotate_canvas_by_ext’] = '${chrome.runtime.id}';})();`;
-
-const script = document.createElement("script");
-script.textContent = injectedCode;
-(document.head || document.documentElement).appendChild(script);
-script.remove();
-
-// For more details on the above go here: https://sites.google.com/google.com/docs-canvas-migration/home
-
 let selectedWord = "";
 const renderSeperator = ", ";
 const wordMustBeAtLeastThisLong = 1;
@@ -20,7 +11,12 @@ const getRhymingSelection = (event) => {
     console.log(
       "Rhymey was not able to get your selected word. That probably means you're using Google Docs! Let's see if we can hack together some magic to get that working."
     );
-    selectedText = getWordFromGoogleDocs(event);
+
+    document
+      .querySelector(".docs-texteventtarget-iframe")
+      .contentDocument.execCommand("copy");
+    selectedText = document.querySelector(".docs-texteventtarget-iframe")
+      .contentDocument.body.innerText;
   }
   return selectedText;
 };
