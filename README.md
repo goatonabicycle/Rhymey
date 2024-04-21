@@ -8,9 +8,15 @@ Link: https://chrome.google.com/webstore/detail/rhymey/fbkmdcolngnmmhmdkhngfmdme
 
 Rhymey uses the lovely datamuse api (https://www.datamuse.com/api/)
 
-# How do I get it running?
+## How do I get it running?
 
 Rhymey doesn't have any build mechanism at the moment. Soon!
 
-# Google docs
-Hopefully it'll function in Google docs soon.
+## Google docs
+
+Rhymey now works on Google Docs. 
+
+## I found a bug! What now? 
+
+Make issue please!
+
