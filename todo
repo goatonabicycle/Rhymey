@@ -1,4 +1,8 @@
-- Finish up the logic to get this working in Google Docs. 
-    Currently the challange is that pages get returned in a nonsensical order. This makes the complex logic of getting the word that a user clicked on much more complex. 
+- Full window resize screws with the positioning logic.
+- A bunch of the popup logic is really ugly. Fix that.
+- Have a mechanism for increasing and decreasing the font.
+- Maybe even some general settings?
+  - Make what you want to see configurable.
 - Add the vite mechanism from the "Things on this page" project
-- Release a v3. 
+- Tests!
+- Release a v3.
