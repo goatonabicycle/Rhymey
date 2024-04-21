@@ -1,130 +1,202 @@
-let selectedWord = "";
-const renderSeperator = ", ";
-const wordMustBeAtLeastThisLong = 1;
+const wordMinimumLength = 1;
+const apiBaseUrl = "https://api.datamuse.com/words";
 
-const getRhymingSelection = (event) => {
-  let selectedText =
-    (document.selection && document.selection.createRange().text) ||
-    (window.getSelection && window.getSelection().toString());
+document.addEventListener("dblclick", handleDoubleClick);
+document.addEventListener("mouseup", handleClosePopup);
+document.addEventListener("keydown", handleKeydownPopupClose);
 
-  if (!selectedText) {
-    console.log(
-      "Rhymey was not able to get your selected word. That probably means you're using Google Docs! Let's see if we can hack together some magic to get that working."
-    );
-
-    document
-      .querySelector(".docs-texteventtarget-iframe")
-      .contentDocument.execCommand("copy");
-    selectedText = document.querySelector(".docs-texteventtarget-iframe")
-      .contentDocument.body.innerText;
+async function handleDoubleClick() {
+  const selectedWord = getSelectedText().trim();
+  console.log("Selected word:", selectedWord);
+  if (selectedWord.length > wordMinimumLength) {
+    const wordInfo = await fetchWordInfo(selectedWord);
+    displayPopup(selectedWord, wordInfo);
   }
-  return selectedText;
-};
+}
 
-document.addEventListener("dblclick", (event) => {
-  // Todo: Add a loading indicator here?
-  let selectedWord = getRhymingSelection(event);
-  console.log("Rhymey - selected word: ", selectedWord);
-  if (
-    selectedWord.length &&
-    selectedWord.trim().length > wordMustBeAtLeastThisLong
-  ) {
-    selectedWord = selectedWord.trim();
-    getInfoAbout(selectedWord);
-  } else {
-    selectedWord = "";
+function getSelectedText() {
+  if (window.getSelection) {
+    return window.getSelection().toString();
+  } else if (document.selection && document.selection.createRange) {
+    return document.selection.createRange().text;
   }
-});
+  return "";
+}
 
-document.addEventListener("mouseup", (event) => {
-  if (event.target.closest(".rhymey-popup-contain")) return;
-  popup.removeExistingPopup();
-});
+async function fetchWordInfo(word) {
+  const queries = ["rel_rhy", "rel_nry", "ml", "rel_trg"].map(
+    (rel) => `${apiBaseUrl}?${rel}=${word}&md=d`
+  );
+  const requests = queries.map((query) =>
+    fetch(query).then((res) => res.json())
+  );
+  return Promise.all(requests);
+}
 
-document.addEventListener("keydown", (event) => {
-  console.log("keydown");
-  popup.removeExistingPopup();
-});
+function displayPopup(word, results) {
+  removeExistingPopup();
+  const popup = createPopupElement(word, results);
+  document.body.appendChild(popup);
+  makeDraggable(popup);
+  makeResizable(popup);
+}
 
-const getInfoAbout = (selectedWord) => {
-  let requestForRealRhymes = fetch(
-    "https://api.datamuse.com/words?rel_rhy=" + selectedWord + "&md=d"
-  ).then(makeItJson);
-  let requestForNearRhymes = fetch(
-    "https://api.datamuse.com/words?rel_nry=" + selectedWord
-  ).then(makeItJson);
+function createPopupElement(word, results) {
+  const container = document.createElement("div");
+  container.id = "RhymeContainer";
+  container.className = "rhymey-popup-contain";
 
-  let requestForSimilarMeaning = fetch(
-    "https://api.datamuse.com/words?ml=" + selectedWord
-  ).then(makeItJson);
+  container.style.cssText = `position: fixed; top: ${
+    localStorage.getItem("popupTop") || "10px"
+  }; left: ${localStorage.getItem("popupLeft") || "10px"}; width: ${
+    localStorage.getItem("popupWidth") || "160px"
+  }; height: ${localStorage.getItem("popupHeight") || "300px"};`;
 
-  let requestForRelated = fetch(
-    "https://api.datamuse.com/words?rel_trg=" + selectedWord
-  ).then(makeItJson);
+  container.innerHTML = `
+        <div class="rhymey-content-container" style="height: 100%; overflow: auto;">
+            <div class="rhymey-word">${word}</div>
+            ${results
+              .map((result, index) =>
+                renderBlock(
+                  ["Rhymes", "Near Rhymes", "Similar meaning", "Related"][
+                    index
+                  ],
+                  result
+                )
+              )
+              .join("")}
+        </div>`;
 
-  Promise.all([
-    requestForRealRhymes,
-    requestForNearRhymes,
-    requestForSimilarMeaning,
-    requestForRelated,
-  ]).then(function (results) {
-    popup.addToPage(
-      selectedWord,
-      results[0],
-      results[1],
-      results[2],
-      results[3]
-    );
+  return container;
+}
+
+function renderBlock(title, data) {
+  const content =
+    data.length > 0
+      ? data
+          .map((item) => `<span class='rhymey-hover'>${item.word}</span>`)
+          .join(", ")
+      : "Nothing found.";
+  return `<div class="rhymey-title">${title}</div><div class="rhymey-content">${content}</div>`;
+}
+
+function removeExistingPopup() {
+  const existingPopup = document.querySelector("#RhymeContainer");
+  if (existingPopup) existingPopup.remove();
+}
+
+function handleClosePopup(event) {
+  if (!event.target.closest("#RhymeContainer")) {
+    removeExistingPopup();
+  }
+}
+
+function handleKeydownPopupClose(event) {
+  if (event.key === "Escape") {
+    removeExistingPopup();
+  }
+}
+
+function makeDraggable(element) {
+  element.onmousedown = function (event) {
+    if (event.target.classList.contains("resizer")) return;
+    dragElement(element, event);
+  };
+}
+
+function dragElement(element, event) {
+  const offsetX = event.clientX - element.offsetLeft;
+  const offsetY = event.clientY - element.offsetTop;
+
+  function onMouseMove(e) {
+    element.style.left = `${e.clientX - offsetX}px`;
+    element.style.top = `${e.clientY - offsetY}px`;
+  }
+
+  function onMouseUp() {
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+    localStorage.setItem("popupTop", element.style.top);
+    localStorage.setItem("popupLeft", element.style.left);
+  }
+
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
+}
+
+function makeResizable(element) {
+  const positions = ["top-left", "top-right", "bottom-left", "bottom-right"];
+  positions.forEach((position) => {
+    const resizer = document.createElement("div");
+    setupResizer(element, resizer, position);
   });
-};
+}
 
-let popup = {
-  addToPage: (
-    selectedWord,
-    realRhymes,
-    nearRhymes,
-    similarMeaning,
-    related
-  ) => {
-    popup.removeExistingPopup();
+function setupResizer(container, resizer, position) {
+  resizer.className = "resizer";
+  resizer.style.cssText = `width: 8px; height: 8px; background: black; position: absolute; cursor: ${
+    position.includes("top") ? "n" : "s"
+  }${position.includes("left") ? "w" : "e"}-resize; ${position.replace(
+    "-",
+    ": 0; "
+  )}: 0;`;
+  container.appendChild(resizer);
 
-    let container = document.createElement("div");
-    container.id = "RhymeContainer";
-    container.className = "rhymey-popup-contain";
-    container.innerHTML = `
-    <div>
-        <div class="rhymey-word">${selectedWord}</div>
-        ${renderBlock("Rhymes", realRhymes)}
-        ${renderBlock("Near Rhymes", nearRhymes)}
-        ${renderBlock("Similar meaning", similarMeaning)}
-        ${renderBlock("Related", related)}
-    </div>`;
-    document.body.appendChild(container);
-  },
+  resizer.onmousedown = function (event) {
+    event.preventDefault();
+    resizeElement(container, event, position);
+  };
+}
 
-  removeExistingPopup: () => {
-    let box = document.querySelector(".rhymey-popup-contain");
-    if (box && box.parentNode) {
-      box.parentNode.removeChild(box);
-    }
-  },
-};
+function resizeElement(element, event, position) {
+  const startX = event.clientX;
+  const startY = event.clientY;
+  const startWidth = parseInt(
+    document.defaultView.getComputedStyle(element).width,
+    10
+  );
+  const startHeight = parseInt(
+    document.defaultView.getComputedStyle(element).height,
+    10
+  );
+  const startPos = element.getBoundingClientRect();
 
-const renderBlock = (title, data) => {
-  let display = "Nothing found.";
-  if (data.length > 0) {
-    display = "";
-    for (const item of data) {
-      display += `<span class='rhymey-hover'>${item.word}</span>${renderSeperator}`;
+  function onMouseMove(e) {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    switch (position) {
+      case "top-left":
+        element.style.width = `${Math.max(100, startWidth - dx)}px`;
+        element.style.height = `${Math.max(50, startHeight - dy)}px`;
+        element.style.top = `${startPos.top + dy}px`;
+        element.style.left = `${startPos.left + dx}px`;
+        break;
+      case "top-right":
+        element.style.width = `${Math.max(100, startWidth + dx)}px`;
+        element.style.height = `${Math.max(50, startHeight - dy)}px`;
+        element.style.top = `${startPos.top + dy}px`;
+        break;
+      case "bottom-left":
+        element.style.width = `${Math.max(100, startWidth - dx)}px`;
+        element.style.height = `${Math.max(50, startHeight + dy)}px`;
+        element.style.left = `${startPos.left + dx}px`;
+        break;
+      case "bottom-right":
+        element.style.width = `${Math.max(100, startWidth + dx)}px`;
+        element.style.height = `${Math.max(50, startHeight + dy)}px`;
+        break;
     }
   }
 
-  return ` <div class="rhymey-title">${title}</div>
-  <div class="rhymey-content">
-    ${display.replace(/,\s*$/, "")}
-  </div>`;
-};
+  function onMouseUp() {
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+    localStorage.setItem("popupWidth", element.style.width);
+    localStorage.setItem("popupHeight", element.style.height);
+    localStorage.setItem("popupTop", element.style.top);
+    localStorage.setItem("popupLeft", element.style.left);
+  }
 
-const makeItJson = (response) => {
-  return response.json();
-};
+  window.addEventListener("mousemove", onMouseMove);
+  window.addEventListener("mouseup", onMouseUp);
+}

@@ -1,20 +1,19 @@
 {
   "name": "Rhymey",
   "short_name": "Rhymey",
-  "description": "The easiest and best way of getting words that rhyme with the word you double clicked on!",
+  "description": "The easiest and best way of getting words that rhyme with the word you double clicked on! Now works in Google Docs!",
   "version": "2",
   "manifest_version": 3,
   "host_permissions": ["https://*.google.com/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
-      "js": ["js/content.js", "js/googleDocs.js"],
+      "js": ["js/content.js"],
       "css": ["css/custom.css"],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
-  "permissions": ["activeTab", "tabs", "scripting"],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
