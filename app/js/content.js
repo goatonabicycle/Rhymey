@@ -15,12 +15,20 @@ async function handleDoubleClick() {
 }
 
 function getSelectedText() {
-  if (window.getSelection) {
-    return window.getSelection().toString();
-  } else if (document.selection && document.selection.createRange) {
-    return document.selection.createRange().text;
+  let selectedText = document.selection
+    ? document.selection.createRange().text
+    : window.getSelection().toString();
+  if (!selectedText) {
+    console.log(
+      "Rhymey was not able to get your selected word. That probably means you're using Google Docs!"
+    );
+    document
+      .querySelector(".docs-texteventtarget-iframe")
+      .contentDocument.execCommand("copy");
+    selectedText = document.querySelector(".docs-texteventtarget-iframe")
+      .contentDocument.body.innerText;
   }
-  return "";
+  return selectedText;
 }
 
 async function fetchWordInfo(word) {
@@ -45,38 +53,28 @@ function createPopupElement(word, results) {
   const container = document.createElement("div");
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
-
-  container.style.cssText = `position: fixed; top: ${
-    localStorage.getItem("popupTop") || "10px"
-  }; left: ${localStorage.getItem("popupLeft") || "10px"}; width: ${
-    localStorage.getItem("popupWidth") || "160px"
-  }; height: ${localStorage.getItem("popupHeight") || "300px"};`;
-
-  container.innerHTML = `
-        <div class="rhymey-content-container" style="height: 100%; overflow: auto;">
-            <div class="rhymey-word">${word}</div>
-            ${results
-              .map((result, index) =>
-                renderBlock(
-                  ["Rhymes", "Near Rhymes", "Similar meaning", "Related"][
-                    index
-                  ],
-                  result
-                )
-              )
-              .join("")}
-        </div>`;
-
+  const popupTop = localStorage.getItem("popupTop") || "10px";
+  const popupLeft = localStorage.getItem("popupLeft") || "10px";
+  const popupWidth = localStorage.getItem("popupWidth") || "360px";
+  const popupHeight = localStorage.getItem("popupHeight") || "800px";
+  container.style.cssText = `position: fixed; top: ${popupTop}; left: ${popupLeft}; width: ${popupWidth}; height: ${popupHeight};`;
+  const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
+  const blocks = results
+    .map((result, index) => renderBlock(titles[index], result))
+    .join("");
+  const contentHTML = `<div class="rhymey-content-container" style="height: 100%; overflow: auto;"><div class="rhymey-word">${word}</div>${blocks}</div>`;
+  container.innerHTML = contentHTML;
   return container;
 }
 
 function renderBlock(title, data) {
-  const content =
-    data.length > 0
-      ? data
-          .map((item) => `<span class='rhymey-hover'>${item.word}</span>`)
-          .join(", ")
-      : "Nothing found.";
+  let content = "Nothing found.";
+  if (data.length > 0) {
+    const words = data.map(
+      (item) => `<span class='rhymey-hover'>${item.word}</span>`
+    );
+    content = words.join(", ");
+  }
   return `<div class="rhymey-title">${title}</div><div class="rhymey-content">${content}</div>`;
 }
 

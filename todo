@@ -1,3 +1,4 @@
+- Change the UI to always show the word we're working with when scrolling.
 - Full window resize screws with the positioning logic.
 - A bunch of the popup logic is really ugly. Fix that.
 - Have a mechanism for increasing and decreasing the font.
