@@ -54,10 +54,10 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
   const popupTop = localStorage.getItem("popupTop") || "10px";
-  const popupLeft = localStorage.getItem("popupLeft") || "10px";
+  const popupRight = localStorage.getItem("popupRight") || "10px"; // Change this line
   const popupWidth = localStorage.getItem("popupWidth") || "360px";
   const popupHeight = localStorage.getItem("popupHeight") || "800px";
-  container.style.cssText = `position: fixed; top: ${popupTop}; left: ${popupLeft}; width: ${popupWidth}; height: ${popupHeight};`;
+  container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; height: ${popupHeight};`; // Change this line
   const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
   const blocks = results
     .map((result, index) => renderBlock(titles[index], result))
@@ -103,19 +103,30 @@ function makeDraggable(element) {
 }
 
 function dragElement(element, event) {
-  const offsetX = event.clientX - element.offsetLeft;
-  const offsetY = event.clientY - element.offsetTop;
+  const startX = event.clientX;
+  const startY = event.clientY;
+
+  const startRight =
+    document.body.clientWidth -
+    (element.getBoundingClientRect().right + window.scrollX);
+  const startTop = element.offsetTop;
 
   function onMouseMove(e) {
-    element.style.left = `${e.clientX - offsetX}px`;
-    element.style.top = `${e.clientY - offsetY}px`;
+    const dx = startX - e.clientX;
+    const dy = startY - e.clientY;
+
+    const newRight = Math.max(0, startRight + dx);
+    const newTop = Math.max(0, startTop - dy);
+
+    element.style.right = `${newRight}px`;
+    element.style.top = `${newTop}px`;
   }
 
   function onMouseUp() {
     window.removeEventListener("mousemove", onMouseMove);
     window.removeEventListener("mouseup", onMouseUp);
     localStorage.setItem("popupTop", element.style.top);
-    localStorage.setItem("popupLeft", element.style.left);
+    localStorage.setItem("popupRight", element.style.right);
   }
 
   window.addEventListener("mousemove", onMouseMove);
@@ -158,30 +169,32 @@ function resizeElement(element, event, position) {
     10
   );
   const startPos = element.getBoundingClientRect();
+  const startRight = document.body.clientWidth - startPos.right;
 
   function onMouseMove(e) {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
+
     switch (position) {
-      case "top-left":
-        element.style.width = `${Math.max(100, startWidth - dx)}px`;
-        element.style.height = `${Math.max(50, startHeight - dy)}px`;
-        element.style.top = `${startPos.top + dy}px`;
-        element.style.left = `${startPos.left + dx}px`;
-        break;
       case "top-right":
         element.style.width = `${Math.max(100, startWidth + dx)}px`;
         element.style.height = `${Math.max(50, startHeight - dy)}px`;
         element.style.top = `${startPos.top + dy}px`;
         break;
-      case "bottom-left":
-        element.style.width = `${Math.max(100, startWidth - dx)}px`;
-        element.style.height = `${Math.max(50, startHeight + dy)}px`;
-        element.style.left = `${startPos.left + dx}px`;
-        break;
       case "bottom-right":
         element.style.width = `${Math.max(100, startWidth + dx)}px`;
         element.style.height = `${Math.max(50, startHeight + dy)}px`;
+        break;
+      case "top-left":
+        element.style.width = `${Math.max(100, startWidth - dx)}px`;
+        element.style.height = `${Math.max(50, startHeight - dy)}px`;
+        element.style.top = `${startPos.top + dy}px`;
+        element.style.right = `${startRight}px`;
+        break;
+      case "bottom-left":
+        element.style.width = `${Math.max(100, startWidth - dx)}px`;
+        element.style.height = `${Math.max(50, startHeight + dy)}px`;
+        element.style.right = `${startRight}px`;
         break;
     }
   }
@@ -192,7 +205,7 @@ function resizeElement(element, event, position) {
     localStorage.setItem("popupWidth", element.style.width);
     localStorage.setItem("popupHeight", element.style.height);
     localStorage.setItem("popupTop", element.style.top);
-    localStorage.setItem("popupLeft", element.style.left);
+    localStorage.setItem("popupRight", element.style.right);
   }
 
   window.addEventListener("mousemove", onMouseMove);
