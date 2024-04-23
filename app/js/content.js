@@ -150,18 +150,35 @@ function makeResizable(element) {
 
 function setupResizer(container, resizer, position) {
   resizer.className = "resizer";
-  resizer.style.cssText = `width: 8px; height: 8px; background: black; position: absolute; cursor: ${
-    position.includes("top") ? "n" : "s"
-  }${position.includes("left") ? "w" : "e"}-resize; ${position.replace(
-    "-",
-    ": 0; "
-  )}: 0;`;
+  resizer.style.width = "8px";
+  resizer.style.height = "8px";
+  resizer.style.background = "black";
+  resizer.style.position = "absolute";
+
+  const cursorType = determineCursorType(position);
+  resizer.style.cursor = cursorType;
+
+  setPosition(resizer, position);
+
   container.appendChild(resizer);
 
   resizer.onmousedown = function (event) {
     event.preventDefault();
     resizeElement(container, event, position);
   };
+
+  function determineCursorType(position) {
+    const verticalPosition = position.includes("top") ? "n" : "s";
+    const horizontalPosition = position.includes("left") ? "w" : "e";
+    return `${verticalPosition}${horizontalPosition}-resize`;
+  }
+
+  function setPosition(resizer, position) {
+    const positions = position.split("-");
+    positions.forEach((pos) => {
+      resizer.style[pos] = "0";
+    });
+  }
 }
 
 function resizeElement(element, event, position) {
