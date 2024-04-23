@@ -4,6 +4,7 @@ const apiBaseUrl = "https://api.datamuse.com/words";
 document.addEventListener("dblclick", handleDoubleClick);
 document.addEventListener("mouseup", handleClosePopup);
 document.addEventListener("keydown", handleKeydownPopupClose);
+window.addEventListener("resize", handleWindowResize);
 
 async function handleDoubleClick() {
   const selectedWord = getSelectedText().trim();
@@ -54,10 +55,10 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
   const popupTop = localStorage.getItem("popupTop") || "10px";
-  const popupRight = localStorage.getItem("popupRight") || "10px"; // Change this line
+  const popupRight = localStorage.getItem("popupRight") || "10px";
   const popupWidth = localStorage.getItem("popupWidth") || "360px";
   const popupHeight = localStorage.getItem("popupHeight") || "800px";
-  container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; height: ${popupHeight};`; // Change this line
+  container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; height: ${popupHeight};`;
   const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
   const blocks = results
     .map((result, index) => renderBlock(titles[index], result))
@@ -115,8 +116,14 @@ function dragElement(element, event) {
     const dx = startX - e.clientX;
     const dy = startY - e.clientY;
 
-    const newRight = Math.max(0, startRight + dx);
-    const newTop = Math.max(0, startTop - dy);
+    const newRight = Math.max(
+      0,
+      Math.min(startRight + dx, document.body.clientWidth - element.offsetWidth)
+    );
+    const newTop = Math.max(
+      0,
+      Math.min(startTop - dy, document.body.clientHeight - element.offsetHeight)
+    );
 
     element.style.right = `${newRight}px`;
     element.style.top = `${newTop}px`;
@@ -179,16 +186,30 @@ function resizeElement(element, event, position) {
       case "top-right":
         element.style.width = `${Math.max(100, startWidth + dx)}px`;
         element.style.height = `${Math.max(50, startHeight - dy)}px`;
-        element.style.top = `${startPos.top + dy}px`;
+        element.style.top = `${Math.min(
+          startPos.top + dy,
+          document.body.clientHeight - element.offsetHeight
+        )}px`;
+        element.style.right = `${Math.min(
+          startRight - dx,
+          document.body.clientWidth - element.offsetWidth
+        )}px`;
         break;
       case "bottom-right":
         element.style.width = `${Math.max(100, startWidth + dx)}px`;
         element.style.height = `${Math.max(50, startHeight + dy)}px`;
+        element.style.right = `${Math.min(
+          startRight - dx,
+          document.body.clientWidth - element.offsetWidth
+        )}px`;
         break;
       case "top-left":
         element.style.width = `${Math.max(100, startWidth - dx)}px`;
         element.style.height = `${Math.max(50, startHeight - dy)}px`;
-        element.style.top = `${startPos.top + dy}px`;
+        element.style.top = `${Math.min(
+          startPos.top + dy,
+          document.body.clientHeight - element.offsetHeight
+        )}px`;
         element.style.right = `${startRight}px`;
         break;
       case "bottom-left":
@@ -210,4 +231,21 @@ function resizeElement(element, event, position) {
 
   window.addEventListener("mousemove", onMouseMove);
   window.addEventListener("mouseup", onMouseUp);
+}
+
+function handleWindowResize() {
+  const popup = document.getElementById("RhymeContainer");
+
+  if (popup) {
+    const rightEdge = popup.offsetLeft + popup.offsetWidth;
+    const bottomEdge = popup.offsetTop + popup.offsetHeight;
+
+    if (rightEdge > window.innerWidth) {
+      popup.style.right = "0px";
+    }
+
+    if (bottomEdge > window.innerHeight) {
+      popup.style.top = `${window.innerHeight - popup.offsetHeight}px`;
+    }
+  }
 }
