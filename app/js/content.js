@@ -254,15 +254,26 @@ function handleWindowResize() {
   const popup = document.getElementById("RhymeContainer");
 
   if (popup) {
-    const rightEdge = popup.offsetLeft + popup.offsetWidth;
-    const bottomEdge = popup.offsetTop + popup.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const popupRect = popup.getBoundingClientRect();
+    const popupWidth = popupRect.width;
+    const popupHeight = popupRect.height;
 
-    if (rightEdge > window.innerWidth) {
-      popup.style.right = "0px";
+    if (popupRect.left + popupWidth > windowWidth) {
+      popup.style.right = `${windowWidth - popupRect.left}px`;
     }
 
-    if (bottomEdge > window.innerHeight) {
-      popup.style.top = `${window.innerHeight - popup.offsetHeight}px`;
+    if (popupRect.top + popupHeight > windowHeight) {
+      popup.style.top = `${windowHeight - popupHeight}px`;
+    }
+
+    if (popupRect.left < 0) {
+      popup.style.right = `${windowWidth - popupWidth}px`;
+    }
+
+    if (popupRect.top < 0) {
+      popup.style.top = "0px";
     }
   }
 }
