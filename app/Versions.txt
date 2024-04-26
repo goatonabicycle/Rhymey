@@ -1,5 +1,12 @@
 Releases:
 
+
+- v3.0 (unreleased) 
+    - Google Docs now working. 
+    - Resize mechanism
+    - Reposition mechanism
+    - Style overhaul
+
 - v2.0
     - Style overhaul. 
     - Manifest version 3
