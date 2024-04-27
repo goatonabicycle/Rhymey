@@ -63,7 +63,7 @@ function createPopupElement(word, results) {
   const blocks = results
     .map((result, index) => renderBlock(titles[index], result))
     .join("");
-  const contentHTML = `<div class="rhymey-content-container" style="height: 100%; overflow: auto;"><div class="rhymey-word">${word}</div>${blocks}</div>`;
+  const contentHTML = `<div class="rhymey-word">${word}</div><div style="height: 100%; overflow: auto;">${blocks}</div>`;
   container.innerHTML = contentHTML;
   return container;
 }
