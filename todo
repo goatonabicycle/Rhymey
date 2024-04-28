@@ -1,4 +1,3 @@
-- Change the UI to always show the word we're working with when scrolling.
 - Have a mechanism for increasing and decreasing the font.
 - Add the vite mechanism from the "Things on this page" project
 - Tests!
