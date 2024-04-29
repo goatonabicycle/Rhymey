@@ -54,17 +54,19 @@ function createPopupElement(word, results) {
   const container = document.createElement("div");
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
+
   const popupTop = localStorage.getItem("popupTop") || "10px";
   const popupRight = localStorage.getItem("popupRight") || "10px";
   const popupWidth = localStorage.getItem("popupWidth") || "360px";
   const popupHeight = localStorage.getItem("popupHeight") || "800px";
   container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; height: ${popupHeight};`;
+
   const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
   const blocks = results
     .map((result, index) => renderBlock(titles[index], result))
     .join("");
-  const contentHTML = `<div class="rhymey-word">${word}</div><div style="height: 100%; overflow: auto;">${blocks}</div>`;
-  container.innerHTML = contentHTML;
+
+  container.innerHTML = `<div class="rhymey-word">${word}</div><div style="height: 100%; overflow: auto;">${blocks}</div>`;
   return container;
 }
 
