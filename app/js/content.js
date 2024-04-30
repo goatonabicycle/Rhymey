@@ -1,15 +1,25 @@
-const wordMinimumLength = 1;
-const apiBaseUrl = "https://api.datamuse.com/words";
+const config = {
+  wordMinimumLength: 1,
+  apiBaseUrl: "https://api.datamuse.com/words",
+  popup: {
+    top: "10px",
+    right: "10px",
+    width: "360px",
+    height: "800px",
+  },
+};
 
-document.addEventListener("dblclick", handleDoubleClick);
-document.addEventListener("mouseup", handleClosePopup);
-document.addEventListener("keydown", handleKeydownPopupClose);
-window.addEventListener("resize", handleWindowResize);
+document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("dblclick", handleDoubleClick);
+  document.addEventListener("mouseup", handleClosePopup);
+  document.addEventListener("keydown", handleKeydownPopupClose);
+  window.addEventListener("resize", handleWindowResize);
+});
 
 async function handleDoubleClick() {
   const selectedWord = getSelectedText().trim();
   console.log("Selected word:", selectedWord);
-  if (selectedWord.length > wordMinimumLength) {
+  if (selectedWord.length > config.wordMinimumLength) {
     const wordInfo = await fetchWordInfo(selectedWord);
     displayPopup(selectedWord, wordInfo);
   }
@@ -34,7 +44,7 @@ function getSelectedText() {
 
 async function fetchWordInfo(word) {
   const queries = ["rel_rhy", "rel_nry", "ml", "rel_trg"].map(
-    (rel) => `${apiBaseUrl}?${rel}=${word}&md=d`
+    (rel) => `${config.apiBaseUrl}?${rel}=${word}&md=d`
   );
   const requests = queries.map((query) =>
     fetch(query).then((res) => res.json())
@@ -55,11 +65,21 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
 
-  const popupTop = localStorage.getItem("popupTop") || "10px";
-  const popupRight = localStorage.getItem("popupRight") || "10px";
-  const popupWidth = localStorage.getItem("popupWidth") || "360px";
-  const popupHeight = localStorage.getItem("popupHeight") || "800px";
-  container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; height: ${popupHeight};`;
+  function getPopupSetting(key, defaultValue) {
+    return localStorage.getItem(key) || defaultValue;
+  }
+
+  const popupTop = getPopupSetting("popupTop", config.popup.top);
+  const popupRight = getPopupSetting("popupRight", config.popup.right);
+  const popupWidth = getPopupSetting("popupWidth", config.popup.width);
+  const popupHeight = getPopupSetting("popupHeight", config.popup.height);
+
+  container.style.cssText =
+    `position: fixed; ` +
+    `top: ${popupTop}; ` +
+    `right: ${popupRight}; ` +
+    `width: ${popupWidth}; ` +
+    `height: ${popupHeight};`;
 
   const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
   const blocks = results
