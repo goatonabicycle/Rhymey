@@ -126,25 +126,30 @@ function makeDraggable(element) {
 }
 
 function dragElement(element, event) {
-  const startX = event.clientX;
-  const startY = event.clientY;
-
-  const startRight =
+  const initialMouseX = event.clientX;
+  const initialMouseY = event.clientY;
+  const initialRight =
     document.body.clientWidth -
     (element.getBoundingClientRect().right + window.scrollX);
-  const startTop = element.offsetTop;
+  const initialTop = element.offsetTop;
 
-  function onMouseMove(e) {
-    const dx = startX - e.clientX;
-    const dy = startY - e.clientY;
+  function onMouseMove(mouseEvent) {
+    const deltaX = initialMouseX - mouseEvent.clientX;
+    const deltaY = initialMouseY - mouseEvent.clientY;
 
     const newRight = Math.max(
       0,
-      Math.min(startRight + dx, document.body.clientWidth - element.offsetWidth)
+      Math.min(
+        initialRight + deltaX,
+        document.body.clientWidth - element.offsetWidth
+      )
     );
     const newTop = Math.max(
       0,
-      Math.min(startTop - dy, document.body.clientHeight - element.offsetHeight)
+      Math.min(
+        initialTop - deltaY,
+        document.body.clientHeight - element.offsetHeight
+      )
     );
 
     element.style.right = `${newRight}px`;
