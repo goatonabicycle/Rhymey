@@ -1,10 +1,10 @@
 const config = {
-  wordMinimumLength: 1,
+  wordMinimumLength: 2,
   apiBaseUrl: "https://api.datamuse.com/words",
   popup: {
-    top: "10px",
-    right: "10px",
-    width: "360px",
+    top: "20px",
+    right: "20px",
+    width: "350px",
     height: "800px",
   },
 };
