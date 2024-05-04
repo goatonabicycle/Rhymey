@@ -26,19 +26,26 @@ async function handleDoubleClick() {
 }
 
 function getSelectedText() {
-  let selectedText = document.selection
-    ? document.selection.createRange().text
-    : window.getSelection().toString();
+  let selectedText = window.getSelection().toString();
+
   if (!selectedText) {
     console.log(
       "Rhymey was not able to get your selected word. That probably means you're using Google Docs!"
     );
-    document
-      .querySelector(".docs-texteventtarget-iframe")
-      .contentDocument.execCommand("copy");
-    selectedText = document.querySelector(".docs-texteventtarget-iframe")
-      .contentDocument.body.innerText;
+
+    const iframe = document.querySelector(".docs-texteventtarget-iframe");
+    if (iframe && iframe.contentDocument) {
+      try {
+        iframe.contentDocument.execCommand("copy");
+        selectedText = iframe.contentDocument.body.innerText;
+      } catch (error) {
+        console.error("Error accessing Google Docs iframe:", error);
+      }
+    } else {
+      console.error("Google Docs iframe not found or inaccessible.");
+    }
   }
+
   return selectedText;
 }
 
