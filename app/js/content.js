@@ -19,14 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
 async function handleDoubleClick() {
   const selectedWord = getSelectedText().trim();
   console.log("Selected word:", selectedWord);
-  if (selectedWord.length > config.wordMinimumLength) {
+  if (selectedWord?.length > config.wordMinimumLength) {
     const wordInfo = await fetchWordInfo(selectedWord);
     displayPopup(selectedWord, wordInfo);
   }
 }
 
 function getSelectedText() {
-  let selectedText = window.getSelection().toString();
+  let selectedText = window.getSelection().toString() || "";
 
   if (!selectedText) {
     console.log(
@@ -35,14 +35,8 @@ function getSelectedText() {
 
     const iframe = document.querySelector(".docs-texteventtarget-iframe");
     if (iframe && iframe.contentDocument) {
-      try {
-        iframe.contentDocument.execCommand("copy");
-        selectedText = iframe.contentDocument.body.innerText;
-      } catch (error) {
-        console.error("Error accessing Google Docs iframe:", error);
-      }
-    } else {
-      console.error("Google Docs iframe not found or inaccessible.");
+      iframe.contentDocument.execCommand("copy");
+      selectedText = iframe.contentDocument.body.innerText;
     }
   }
 
