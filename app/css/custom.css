@@ -11,7 +11,7 @@
   color: var(--popup-text-color);
   border: 1px solid var(--popup-border-color);
   font-family: var(--font-primary), sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   position: fixed;
   display: flex;
   flex-direction: column;
