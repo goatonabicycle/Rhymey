@@ -4,7 +4,6 @@
   "description": "The easiest and best way of getting words that rhyme with the word you double clicked on! Now works in Google Docs!",
   "version": "3",
   "manifest_version": 3,
-  "host_permissions": ["https://*.google.com/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
