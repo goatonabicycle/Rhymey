@@ -14,9 +14,9 @@ Rhymey doesn't have any build mechanism at the moment. Soon!
 
 ## Google docs
 
-Rhymey now works on Google Docs. 
+Rhymey now works on Google Docs and other Google products. 
 
 ## I found a bug! What now? 
 
-Make issue please!
+Make issue please! I promise to look at it ASAP!
 
