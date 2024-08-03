@@ -3,9 +3,9 @@ const config = {
   apiBaseUrl: "https://api.datamuse.com/words",
   popup: {
     top: "20px",
-    right: "20px",
-    width: "350px",
-    height: "800px",
+    right: "0px",
+    width: "200px",
+    maxHeight: "80%",
   },
 };
 
@@ -59,6 +59,13 @@ function displayPopup(word, results) {
   document.body.appendChild(popup);
   makeDraggable(popup);
   makeResizable(popup);
+
+  const firstTab = document.querySelector('.rhymey-tab[data-index="0"]');
+  firstTab.classList.add("active");
+  const firstContent = document.querySelectorAll(".rhymey-tab-content")[0];
+  firstContent.style.display = "block";
+
+  adjustPopupHeight(popup);
 }
 
 function createPopupElement(word, results) {
@@ -73,33 +80,47 @@ function createPopupElement(word, results) {
   const popupTop = getPopupSetting("popupTop", config.popup.top);
   const popupRight = getPopupSetting("popupRight", config.popup.right);
   const popupWidth = getPopupSetting("popupWidth", config.popup.width);
-  const popupHeight = getPopupSetting("popupHeight", config.popup.height);
 
   container.style.cssText =
     `position: fixed; ` +
     `top: ${popupTop}; ` +
     `right: ${popupRight}; ` +
     `width: ${popupWidth}; ` +
-    `height: ${popupHeight};`;
+    `max-height: ${config.popup.maxHeight};`;
 
-  const titles = ["Rhymes", "Near Rhymes", "Similar Meaning", "Related"];
-  const blocks = results
-    .map((result, index) => renderBlock(titles[index], result))
+  const tabs = createTabs([
+    "Rhymes",
+    "Near Rhymes",
+    "Similar Meaning",
+    "Related",
+  ]);
+  const contentBlocks = results
+    .map((result, index) => renderBlock(result))
     .join("");
-
-  container.innerHTML = `<div class="rhymey-word">${word}</div><div style="height: 100%; overflow: auto;">${blocks}</div>`;
+  container.innerHTML = `<div class="rhymey-word">${word}</div>${tabs}<div class="rhymey-content">${contentBlocks}</div>`;
   return container;
 }
 
-function renderBlock(title, data) {
+function createTabs(titles) {
+  return `<div class="rhymey-tabs">${titles
+    .map(
+      (title, index) =>
+        `<div class="rhymey-tab ${
+          index === 0 ? "active" : ""
+        }" data-index="${index}">${title}</div>`
+    )
+    .join("")}</div>`;
+}
+
+function renderBlock(data) {
   let content = "Nothing found.";
   if (data.length > 0) {
     const words = data.map(
-      (item) => `<span class='rhymey-hover'>${item.word}</span>`
+      (item) => `<div class='rhymey-hover'>${item.word}</div>`
     );
-    content = words.join(", ");
+    content = `<div class="rhymey-words-grid">${words.join("")}</div>`;
   }
-  return `<div class="rhymey-title">${title}</div><div class="rhymey-content">${content}</div>`;
+  return `<div class="rhymey-tab-content" style="display: none;">${content}</div>`;
 }
 
 function removeExistingPopup() {
@@ -303,5 +324,30 @@ function handleWindowResize() {
     if (popupRect.top < 0) {
       popup.style.top = "0px";
     }
+  }
+}
+
+document.addEventListener("click", function (event) {
+  if (event.target.classList.contains("rhymey-tab")) {
+    const index = event.target.dataset.index;
+    const allTabs = document.querySelectorAll(".rhymey-tab");
+    const allContents = document.querySelectorAll(".rhymey-tab-content");
+    allTabs.forEach((tab, idx) => {
+      tab.classList.toggle("active", idx == index);
+      allContents[idx].style.display = idx == index ? "block" : "none";
+    });
+    adjustPopupHeight(document.getElementById("RhymeContainer"));
+  }
+});
+
+function adjustPopupHeight(popup) {
+  const maxHeight = window.innerHeight * 0.8;
+  popup.style.height = "auto";
+  if (popup.scrollHeight > maxHeight) {
+    popup.style.height = `${maxHeight + 10}px`;
+    popup.style.overflowY = "auto";
+  } else {
+    popup.style.height = `${popup.scrollHeight + 10}px`;
+    popup.style.overflowY = "hidden";
   }
 }
