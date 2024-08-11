@@ -1,5 +1,7 @@
 Releases:
 
+- v3.0.1
+    - Minor styling improvements
 
 - v3.0 (unreleased) 
     - Google Docs now working. 
