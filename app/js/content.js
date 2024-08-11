@@ -3,8 +3,8 @@ const config = {
   apiBaseUrl: "https://api.datamuse.com/words",
   popup: {
     top: "20px",
-    right: "0px",
-    width: "200px",
+    right: "20px",
+    width: "400px",
     maxHeight: "80%",
   },
 };
@@ -88,12 +88,7 @@ function createPopupElement(word, results) {
     `width: ${popupWidth}; ` +
     `max-height: ${config.popup.maxHeight};`;
 
-  const tabs = createTabs([
-    "Rhymes",
-    "Near Rhymes",
-    "Similar Meaning",
-    "Related",
-  ]);
+  const tabs = createTabs(["Rhymes", "Near", "Similar", "Related"]);
   const contentBlocks = results
     .map((result, index) => renderBlock(result))
     .join("");
