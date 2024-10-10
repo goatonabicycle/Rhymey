@@ -1,5 +1,4 @@
-
-- Easy releases: https://developer.chrome.com/docs/webstore/using-api 
+- Easy releases: https://developer.chrome.com/docs/webstore/using-api
 - Have a mechanism for increasing and decreasing the font.
-- Add the vite mechanism from the "Things on this page" project
-- Hover mode! Find rhymes on hover. 
+- Hover mode! Find rhymes on hover.
+- Worth making this typescript?

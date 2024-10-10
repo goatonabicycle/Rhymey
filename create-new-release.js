@@ -76,7 +76,7 @@ async function main() {
     process.exit(1);
   }
 
-  YayLog(`Starting process for version ${version}`);
+  DoingLog(`Starting process for version ${version}`);
 
   try {
     const secrets = await loadSecrets();
