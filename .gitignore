@@ -1,2 +1,5 @@
 .vscode/settings.json
 secrets.json
+node_modules
+dist
+releases

@@ -1,3 +1,5 @@
+import "../css/custom.css";
+
 const config = {
   wordMinimumLength: 2,
   apiBaseUrl: "https://api.datamuse.com/words",
