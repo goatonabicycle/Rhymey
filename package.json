@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",
-    "vite": "^2.9.18"
+    "vite": "^3.2.11"
   },
   "dependencies": {
     "archiver": "^7.0.1",
