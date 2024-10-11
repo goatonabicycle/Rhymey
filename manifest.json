@@ -2,19 +2,25 @@
   "name": "Rhymey",
   "short_name": "Rhymey",
   "description": "Get rhymes for double-clicked words, even in Google Docs!",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "manifest_version": 3,
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
-      "js": ["extension/js/content.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*",
+        "http://localhost/*"
+      ],
+      "js": [
+        "js/content.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "icons": {
-    "16": "extension/icons/icon16.png",
-    "48": "extension/icons/icon48.png",
-    "128": "extension/icons/icon128.png"
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }

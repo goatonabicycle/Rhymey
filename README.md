@@ -10,7 +10,15 @@ Rhymey uses the lovely datamuse api (https://www.datamuse.com/api/)
 
 ## How do I get it running?
 
-Rhymey doesn't have any build mechanism at the moment. Soon!
+`npm run dev extension`
+
+## How do I release this? 
+
+Build for firefox:
+`npx extension build extension --browser=firefox`
+
+Build for chrome:
+`npx extension build extension --browser=chrome`
 
 ## Google docs
 

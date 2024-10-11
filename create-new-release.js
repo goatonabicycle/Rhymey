@@ -3,6 +3,7 @@ import { createWriteStream } from "fs";
 import path from "path";
 import archiver from "archiver";
 import chalk from "chalk";
+import chromeWebstoreUpload from "chrome-webstore-upload";
 
 async function loadSecrets() {
   DoingLog(`Loading secrets.json...`);
@@ -17,7 +18,7 @@ async function loadSecrets() {
 
 async function updateManifest(version) {
   DoingLog(`Updating manifest.json...`);
-  const manifestPath = path.join(process.cwd(), "extension/manifest.json");
+  const manifestPath = path.join(process.cwd(), "manifest.json");
   try {
     const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
     manifest.version = version;
@@ -99,6 +100,15 @@ async function main() {
 
     const zipPath = path.join(releasesDir, `extension-v${version}.zip`);
     await zipDirectory(extensionDir, zipPath);
+
+    // Do all the chrome token and uploading stuff here.
+
+    const store = chromeWebstoreUpload({
+      extensionId: secrets.extensionId,
+      clientId: secrets.clientId,
+      clientSecret: secrets.clientSecret,
+      refreshToken: secrets.refreshToken,
+    });
 
     YayLog(`Process completed successfully for version ${version}`);
   } catch (error) {
