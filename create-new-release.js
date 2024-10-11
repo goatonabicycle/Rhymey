@@ -18,33 +18,43 @@ async function loadSecrets() {
 async function updateManifest(version) {
   DoingLog(`Updating manifest.json...`);
   const manifestPath = path.join(process.cwd(), "extension/manifest.json");
-  const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
-  manifest.version = version;
-  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
-  YayLog(`Manifest updated to version ${version}`);
+  try {
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
+    manifest.version = version;
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+    YayLog(`Manifest updated to version ${version}`);
+  } catch (error) {
+    throw new Error(
+      chalk.red(`Failed to update manifest.json: ${error.message}`)
+    );
+  }
 }
 
 async function zipDirectory(sourceDir, outputZipPath) {
   DoingLog(`Zipping up extension folder...`);
 
-  const output = createWriteStream(outputZipPath);
-  const archive = archiver("zip", { zlib: { level: 9 } });
+  try {
+    const output = createWriteStream(outputZipPath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
 
-  output.on("close", () => {
-    const message = `Extension folder zipped to ${outputZipPath} (${archive.pointer()} total bytes)`;
-    YayLog(message);
-  });
+    output.on("close", () => {
+      const message = `Extension folder zipped to ${outputZipPath} (${archive.pointer()} total bytes)`;
+      YayLog(message);
+    });
 
-  archive.on("error", (err) => {
-    throw new Error(
-      chalk.red(`Error zipping extension folder: ${err.message}`)
-    );
-  });
+    archive.on("error", (err) => {
+      throw new Error(
+        chalk.red(`Error zipping extension folder: ${err.message}`)
+      );
+    });
 
-  archive.pipe(output);
-  archive.directory(sourceDir, false);
+    archive.pipe(output);
+    archive.directory(sourceDir, false);
 
-  await archive.finalize();
+    await archive.finalize();
+  } catch (error) {
+    throw new Error(chalk.red(`Failed to zip directory: ${error.message}`));
+  }
 }
 
 function YayLog(message) {
@@ -62,23 +72,23 @@ function DoingLog(message) {
 }
 
 async function main() {
-  console.log(
-    chalk.yellow.bold(`
+  try {
+    console.log(
+      chalk.yellow.bold(`
     ╔═══════════════════════════════════════════╗
     ║ Chrome Web Store Extension Upload Script  ║
     ╚═══════════════════════════════════════════╝
   `)
-  );
+    );
 
-  const version = process.argv[2];
-  if (!version) {
-    console.error(chalk.red(`Error: Please provide a version number`));
-    process.exit(1);
-  }
+    const version = process.argv[2];
+    if (!version) {
+      throw new Error(
+        `Version number not provided. Usage: node script.js <version>`
+      );
+    }
 
-  DoingLog(`Starting process for version ${version}`);
-
-  try {
+    DoingLog(`Starting process for version ${version}`);
     const secrets = await loadSecrets();
     YayLog([secrets.CLIENT_ID, secrets.REFRESH_TOKEN].join("|"));
     await updateManifest(version);
@@ -89,8 +99,11 @@ async function main() {
 
     const zipPath = path.join(releasesDir, `extension-v${version}.zip`);
     await zipDirectory(extensionDir, zipPath);
+
+    YayLog(`Process completed successfully for version ${version}`);
   } catch (error) {
     console.error(chalk.red(`Error: ${error.message}`));
+    process.exit(1);
   }
 }
 
