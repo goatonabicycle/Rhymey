@@ -1,12 +1,12 @@
-import { promises as fs } from "fs";
-import { createWriteStream } from "fs";
-import path from "path";
+import { promises as fs } from "node:fs";
+import { createWriteStream } from "node:fs";
+import path from "node:path";
 import archiver from "archiver";
 import chalk from "chalk";
 import chromeWebstoreUpload from "chrome-webstore-upload";
 
 async function loadSecrets() {
-  DoingLog(`Loading secrets.json...`);
+  DoingLog("Loading secrets.json...");
   const secretsPath = path.join(process.cwd(), "secrets.json");
   try {
     const secrets = JSON.parse(await fs.readFile(secretsPath, "utf8"));
@@ -17,7 +17,7 @@ async function loadSecrets() {
 }
 
 async function updateManifest(version) {
-  DoingLog(`Updating manifest.json...`);
+  DoingLog("Updating manifest.json...");
   const manifestPath = path.join(process.cwd(), "manifest.json");
   try {
     const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
@@ -26,13 +26,13 @@ async function updateManifest(version) {
     YayLog(`Manifest updated to version ${version}`);
   } catch (error) {
     throw new Error(
-      chalk.red(`Failed to update manifest.json: ${error.message}`)
+      chalk.red(`Failed to update manifest.json: ${error.message}`),
     );
   }
 }
 
 async function zipDirectory(sourceDir, outputZipPath) {
-  DoingLog(`Zipping up extension folder...`);
+  DoingLog("Zipping up extension folder...");
 
   try {
     const output = createWriteStream(outputZipPath);
@@ -45,7 +45,7 @@ async function zipDirectory(sourceDir, outputZipPath) {
 
     archive.on("error", (err) => {
       throw new Error(
-        chalk.red(`Error zipping extension folder: ${err.message}`)
+        chalk.red(`Error zipping extension folder: ${err.message}`),
       );
     });
 
@@ -63,8 +63,8 @@ function YayLog(message) {
     chalk.green(
       `
         ${message}
-      `
-    )
+      `,
+    ),
   );
 }
 
@@ -79,13 +79,13 @@ async function main() {
     ╔═══════════════════════════════════════════╗
     ║ Chrome Web Store Extension Upload Script  ║
     ╚═══════════════════════════════════════════╝
-  `)
+  `),
     );
 
     const version = process.argv[2];
     if (!version) {
       throw new Error(
-        `Version number not provided. Usage: node script.js <version>`
+        "Version number not provided. Usage: node script.js <version>",
       );
     }
 

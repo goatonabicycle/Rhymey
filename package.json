@@ -5,9 +5,11 @@
   "scripts": {
     "build": "extension build",
     "dev": "extension dev",
-    "start": "extension start"
+    "start": "extension start",
+    "lint": "biome check --fix --unsafe"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.3",
     "archiver": "^7.0.1",
     "chalk": "^5.3.0",
     "chrome-webstore-upload": "^3.1.4",

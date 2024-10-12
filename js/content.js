@@ -32,11 +32,11 @@ function getSelectedText() {
 
   if (!selectedText) {
     console.log(
-      "Rhymey was not able to get your selected word. That probably means you're using Google Docs!"
+      "Rhymey was not able to get your selected word. That probably means you're using Google Docs!",
     );
 
     const iframe = document.querySelector(".docs-texteventtarget-iframe");
-    if (iframe && iframe.contentDocument) {
+    if (iframe?.contentDocument) {
       iframe.contentDocument.execCommand("copy");
       selectedText = iframe.contentDocument.body.innerText;
     }
@@ -47,10 +47,10 @@ function getSelectedText() {
 
 async function fetchWordInfo(word) {
   const queries = ["rel_rhy", "rel_nry", "ml", "rel_trg"].map(
-    (rel) => `${config.apiBaseUrl}?${rel}=${word}&md=d`
+    (rel) => `${config.apiBaseUrl}?${rel}=${word}&md=d`,
   );
   const requests = queries.map((query) =>
-    fetch(query).then((res) => res.json())
+    fetch(query).then((res) => res.json()),
   );
   return Promise.all(requests);
 }
@@ -83,12 +83,7 @@ function createPopupElement(word, results) {
   const popupRight = getPopupSetting("popupRight", config.popup.right);
   const popupWidth = getPopupSetting("popupWidth", config.popup.width);
 
-  container.style.cssText =
-    `position: fixed; ` +
-    `top: ${popupTop}; ` +
-    `right: ${popupRight}; ` +
-    `width: ${popupWidth}; ` +
-    `max-height: ${config.popup.maxHeight};`;
+  container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; max-height: ${config.popup.maxHeight};`;
 
   const tabs = createTabs(["Rhymes", "Near", "Similar", "Related"]);
   const contentBlocks = results
@@ -104,7 +99,7 @@ function createTabs(titles) {
       (title, index) =>
         `<div class="rhymey-tab ${
           index === 0 ? "active" : ""
-        }" data-index="${index}">${title}</div>`
+        }" data-index="${index}">${title}</div>`,
     )
     .join("")}</div>`;
 }
@@ -113,7 +108,7 @@ function renderBlock(data) {
   let content = "Nothing found.";
   if (data.length > 0) {
     const words = data.map(
-      (item) => `<div class='rhymey-hover'>${item.word}</div>`
+      (item) => `<div class='rhymey-hover'>${item.word}</div>`,
     );
     content = `<div class="rhymey-words-grid">${words.join("")}</div>`;
   }
@@ -138,7 +133,7 @@ function handleKeydownPopupClose(event) {
 }
 
 function makeDraggable(element) {
-  element.onmousedown = function (event) {
+  element.onmousedown = (event) => {
     if (event.target.classList.contains("resizer")) return;
     dragElement(element, event);
   };
@@ -160,15 +155,15 @@ function dragElement(element, event) {
       0,
       Math.min(
         initialRight + deltaX,
-        document.body.clientWidth - element.offsetWidth
-      )
+        document.body.clientWidth - element.offsetWidth,
+      ),
     );
     const newTop = Math.max(
       0,
       Math.min(
         initialTop - deltaY,
-        document.body.clientHeight - element.offsetHeight
-      )
+        document.body.clientHeight - element.offsetHeight,
+      ),
     );
 
     element.style.right = `${newRight}px`;
@@ -188,10 +183,11 @@ function dragElement(element, event) {
 
 function makeResizable(element) {
   const positions = ["top-left", "top-right", "bottom-left", "bottom-right"];
-  positions.forEach((position) => {
+
+  for (position of positions) {
     const resizer = document.createElement("div");
     setupResizer(element, resizer, position);
-  });
+  }
 }
 
 function setupResizer(container, resizer, position) {
@@ -208,7 +204,7 @@ function setupResizer(container, resizer, position) {
 
   container.appendChild(resizer);
 
-  resizer.onmousedown = function (event) {
+  resizer.onmousedown = (event) => {
     event.preventDefault();
     resizeElement(container, event, position);
   };
@@ -221,22 +217,23 @@ function setupResizer(container, resizer, position) {
 
   function setPosition(resizer, position) {
     const positions = position.split("-");
-    positions.forEach((pos) => {
+
+    for (post of positions) {
       resizer.style[pos] = "0";
-    });
+    }
   }
 }
 
 function resizeElement(element, event, position) {
   const startX = event.clientX;
   const startY = event.clientY;
-  const startWidth = parseInt(
+  const startWidth = Number.parseInt(
     document.defaultView.getComputedStyle(element).width,
-    10
+    10,
   );
-  const startHeight = parseInt(
+  const startHeight = Number.parseInt(
     document.defaultView.getComputedStyle(element).height,
-    10
+    10,
   );
   const startPos = element.getBoundingClientRect();
   const startRight = document.body.clientWidth - startPos.right;
@@ -251,11 +248,11 @@ function resizeElement(element, event, position) {
         element.style.height = `${Math.max(50, startHeight - dy)}px`;
         element.style.top = `${Math.min(
           startPos.top + dy,
-          document.body.clientHeight - element.offsetHeight
+          document.body.clientHeight - element.offsetHeight,
         )}px`;
         element.style.right = `${Math.min(
           startRight - dx,
-          document.body.clientWidth - element.offsetWidth
+          document.body.clientWidth - element.offsetWidth,
         )}px`;
         break;
       case "bottom-right":
@@ -263,7 +260,7 @@ function resizeElement(element, event, position) {
         element.style.height = `${Math.max(50, startHeight + dy)}px`;
         element.style.right = `${Math.min(
           startRight - dx,
-          document.body.clientWidth - element.offsetWidth
+          document.body.clientWidth - element.offsetWidth,
         )}px`;
         break;
       case "top-left":
@@ -271,7 +268,7 @@ function resizeElement(element, event, position) {
         element.style.height = `${Math.max(50, startHeight - dy)}px`;
         element.style.top = `${Math.min(
           startPos.top + dy,
-          document.body.clientHeight - element.offsetHeight
+          document.body.clientHeight - element.offsetHeight,
         )}px`;
         element.style.right = `${startRight}px`;
         break;
@@ -324,14 +321,14 @@ function handleWindowResize() {
   }
 }
 
-document.addEventListener("click", function (event) {
+document.addEventListener("click", (event) => {
   if (event.target.classList.contains("rhymey-tab")) {
     const index = event.target.dataset.index;
     const allTabs = document.querySelectorAll(".rhymey-tab");
     const allContents = document.querySelectorAll(".rhymey-tab-content");
     allTabs.forEach((tab, idx) => {
-      tab.classList.toggle("active", idx == index);
-      allContents[idx].style.display = idx == index ? "block" : "none";
+      tab.classList.toggle("active", idx === index);
+      allContents[idx].style.display = idx === index ? "block" : "none";
     });
     adjustPopupHeight(document.getElementById("RhymeContainer"));
   }

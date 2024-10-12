@@ -6,14 +6,8 @@
   "manifest_version": 3,
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*",
-        "http://localhost/*"
-      ],
-      "js": [
-        "js/content.js"
-      ],
+      "matches": ["http://*/*", "https://*/*", "http://localhost/*"],
+      "js": ["js/content.js"],
       "run_at": "document_start",
       "all_frames": true
     }
