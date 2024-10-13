@@ -94,7 +94,18 @@ async function main() {
     YayLog([secrets.CLIENT_ID, secrets.REFRESH_TOKEN].join("|"));
     await updateManifest(version);
 
-    const extensionDir = path.join(process.cwd(), "extension");
+    const extensionDir = path.join(process.cwd(), "dist/chrome");
+
+    try {
+      await fs.stat(extensionDir);
+    } catch {
+      throw new Error(
+        chalk.red(
+          `Extension directory ${extensionDir} does not exist. Please run "npm run build"`,
+        ),
+      );
+    }
+
     const releasesDir = path.join(process.cwd(), "releases");
     await fs.mkdir(releasesDir, { recursive: true });
 
@@ -109,6 +120,8 @@ async function main() {
       clientSecret: secrets.clientSecret,
       refreshToken: secrets.refreshToken,
     });
+
+    console.log({ store });
 
     YayLog(`Process completed successfully for version ${version}`);
   } catch (error) {
