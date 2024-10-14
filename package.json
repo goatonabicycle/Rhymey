@@ -6,7 +6,8 @@
     "build": "extension build",
     "dev": "extension dev",
     "start": "extension start",
-    "lint": "biome check --fix --unsafe"
+    "lint": "biome check --fix --unsafe",
+    "release:chrome": "node create-new-release.js"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",

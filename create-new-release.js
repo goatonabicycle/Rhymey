@@ -85,7 +85,7 @@ async function main() {
     const version = process.argv[2];
     if (!version) {
       throw new Error(
-        "Version number not provided. Usage: node script.js <version>",
+        "Version number not provided. Usage: node create-new-release.js <version>",
       );
     }
 
