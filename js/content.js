@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function handleDoubleClick() {
   const selectedWord = getSelectedText().trim();
-  console.log("Selected word:", selectedWord);
+
   if (selectedWord?.length > config.wordMinimumLength) {
     const wordInfo = await fetchWordInfo(selectedWord);
     displayPopup(selectedWord, wordInfo);
