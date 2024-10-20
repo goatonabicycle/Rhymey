@@ -32,7 +32,7 @@ function getSelectedText() {
 
   if (!selectedText) {
     console.log(
-      "Rhymey was not able to get your selected word. That probably means you're using Google Docs!",
+      "Rhymey was not able to get your selected word normally. That probably means you're using Google Docs! Trying magic!",
     );
 
     const iframe = document.querySelector(".docs-texteventtarget-iframe");
