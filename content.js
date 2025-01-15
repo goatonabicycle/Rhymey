@@ -61,8 +61,10 @@ function displayPopup(word, results) {
   makeResizable(popup);
 
   const firstTab = document.querySelector('.rhymey-tab[data-index="0"]');
-  firstTab.classList.add("active");
   const firstContent = document.querySelectorAll(".rhymey-tab-content")[0];
+
+  firstTab.classList.add("active");
+  firstContent.classList.add("active");
   firstContent.style.display = "block";
 
   adjustPopupHeight(popup);
@@ -92,23 +94,27 @@ function createPopupElement(word, results) {
 }
 
 function createTabs(titles) {
-  return `<div class="rhymey-tabs">${titles
-    .map(
-      (title, index) =>
-        `<div class="rhymey-tab ${index === 0 ? "active" : ""
-        }" data-index="${index}">${title}</div>`,
-    )
-    .join("")}</div>`;
+  const tabsContainer = document.createElement('div');
+  tabsContainer.className = 'rhymey-tabs';
+
+  titles.forEach((title, index) => {
+    const tab = document.createElement('div');
+    tab.className = `rhymey-tab ${index === 0 ? 'active' : ''}`;
+    tab.dataset.index = index;
+    tab.textContent = title;
+    tabsContainer.appendChild(tab);
+  });
+
+  return tabsContainer.outerHTML;
 }
 
 function renderBlock(data) {
-  let content = "Nothing found.";
-  if (data.length > 0) {
-    const words = data.map(
-      (item) => `<div class='rhymey-hover'>${item.word}</div>`,
-    );
-    content = `<div class="rhymey-words-grid">${words.join("")}</div>`;
-  }
+  const content = data.length === 0
+    ? '<div class="rhymey-empty">No matches found</div>'
+    : `<div class="rhymey-words-grid">
+         ${data.map(item => `<div class='rhymey-hover'>${item.word}</div>`).join("")}
+       </div>`;
+
   return `<div class="rhymey-tab-content" style="display: none;">${content}</div>`;
 }
 
@@ -323,10 +329,20 @@ document.addEventListener("click", (event) => {
     const index = event.target.dataset.index;
     const allTabs = document.querySelectorAll(".rhymey-tab");
     const allContents = document.querySelectorAll(".rhymey-tab-content");
-    allTabs.forEach((tab, idx) => {
-      tab.classList.toggle("active", idx === index);
-      allContents[idx].style.display = idx === index ? "block" : "none";
-    });
+
+    for (const tab of allTabs) {
+      tab.classList.remove("active");
+    }
+
+    for (const content of allContents) {
+      content.classList.remove("active");
+      content.style.display = "none";
+    }
+
+    event.target.classList.add("active");
+    allContents[index].classList.add("active");
+    allContents[index].style.display = "block";
+
     adjustPopupHeight(document.getElementById("RhymeContainer"));
   }
 });
