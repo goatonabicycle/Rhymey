@@ -1,5 +1,3 @@
-import "../css/custom.css";
-
 const config = {
   wordMinimumLength: 2,
   apiBaseUrl: "https://api.datamuse.com/words",
@@ -97,8 +95,7 @@ function createTabs(titles) {
   return `<div class="rhymey-tabs">${titles
     .map(
       (title, index) =>
-        `<div class="rhymey-tab ${
-          index === 0 ? "active" : ""
+        `<div class="rhymey-tab ${index === 0 ? "active" : ""
         }" data-index="${index}">${title}</div>`,
     )
     .join("")}</div>`;
@@ -184,7 +181,7 @@ function dragElement(element, event) {
 function makeResizable(element) {
   const positions = ["top-left", "top-right", "bottom-left", "bottom-right"];
 
-  for (position of positions) {
+  for (const position of positions) {
     const resizer = document.createElement("div");
     setupResizer(element, resizer, position);
   }
@@ -218,7 +215,7 @@ function setupResizer(container, resizer, position) {
   function setPosition(resizer, position) {
     const positions = position.split("-");
 
-    for (post of positions) {
+    for (const pos of positions) {
       resizer.style[pos] = "0";
     }
   }
