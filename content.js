@@ -53,9 +53,18 @@ async function fetchWordInfo(word) {
   return Promise.all(requests);
 }
 
+async function checkDarkMode() {
+  const { darkMode } = await chrome.storage.sync.get(['darkMode']);
+  const popup = document.getElementById('RhymeContainer');
+  if (popup) {
+    popup.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  }
+}
+
 function displayPopup(word, results) {
   removeExistingPopup();
   const popup = createPopupElement(word, results);
+  checkDarkMode();
   document.body.appendChild(popup);
   makeDraggable(popup);
   makeResizable(popup);

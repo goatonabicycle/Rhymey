@@ -11,7 +11,16 @@
   --tab-active-text: #ffffff;
   --loading-bg: #f3f4f6;
   --loading-highlight: #e5e7eb;
- }
+}
+
+[data-theme="dark"] {
+  --popup-bg-color: #1f2937;
+  --popup-text-color: #f3f4f6;
+  --popup-border-color: #374151;
+  --tab-hover-bg: #374151;
+  --loading-bg: #374151;
+  --loading-highlight: #4b5563;
+}
  
  .rhymey-popup-contain {
   background-color: var(--popup-bg-color);
