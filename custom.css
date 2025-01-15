@@ -62,14 +62,16 @@
   gap: 4px;
   margin-bottom: 16px;
   padding: 0 4px;
-  justify-content: flex-start;
- }
+  justify-content: center;
+  width: 100%;
+}
  
  .rhymey-tab {
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
   flex: 0 1 auto;
+  text-align: center;
   min-width: min-content;
   font-weight: 500;
   font-size: 13px;
