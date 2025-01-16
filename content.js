@@ -47,6 +47,9 @@ async function fetchWordInfo(word) {
   const queries = ["rel_rhy", "rel_nry", "ml", "rel_trg"].map(
     (rel) => `${config.apiBaseUrl}?${rel}=${word}&md=d`,
   );
+
+  queries.push(`${config.apiBaseUrl}?sp=${word}&md=d`);
+
   const requests = queries.map((query) =>
     fetch(query).then((res) => res.json()),
   );
@@ -54,27 +57,48 @@ async function fetchWordInfo(word) {
 }
 
 async function checkDarkMode() {
-  const { darkMode } = await chrome.storage.sync.get(['darkMode']);
-  const popup = document.getElementById('RhymeContainer');
-  if (popup) {
-    popup.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  try {
+    const { darkMode } = await chrome.storage.sync.get(['darkMode']);
+    const popup = document.getElementById('RhymeContainer');
+    if (popup) {
+      if (darkMode) {
+        popup.setAttribute('data-theme', 'dark');
+      } else {
+        popup.removeAttribute('data-theme');
+      }
+    }
+  } catch (error) {
+    console.error('Error checking dark mode:', error);
   }
 }
 
-function displayPopup(word, results) {
+async function displayPopup(word, results) {
   removeExistingPopup();
   const popup = createPopupElement(word, results);
-  checkDarkMode();
+  await checkDarkMode();
   document.body.appendChild(popup);
   makeDraggable(popup);
   makeResizable(popup);
 
-  const firstTab = document.querySelector('.rhymey-tab[data-index="0"]');
-  const firstContent = document.querySelectorAll(".rhymey-tab-content")[0];
+  const { selectedTabIndex = 0 } = await chrome.storage.sync.get(['selectedTabIndex']);
 
-  firstTab.classList.add("active");
-  firstContent.classList.add("active");
-  firstContent.style.display = "block";
+  const tab = document.querySelector(`.rhymey-tab[data-index="${selectedTabIndex}"]`);
+  const content = document.querySelectorAll(".rhymey-tab-content")[selectedTabIndex];
+
+  if (tab && content) {
+    tab.classList.add("active");
+    content.classList.add("active");
+    content.style.display = "block";
+  } else {
+    const firstTab = document.querySelector('.rhymey-tab[data-index="0"]');
+    const firstContent = document.querySelectorAll(".rhymey-tab-content")[0];
+
+    if (firstTab && firstContent) {
+      firstTab.classList.add("active");
+      firstContent.classList.add("active");
+      firstContent.style.display = "block";
+    }
+  }
 
   adjustPopupHeight(popup);
 }
@@ -83,6 +107,12 @@ function createPopupElement(word, results) {
   const container = document.createElement("div");
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
+
+  chrome.storage.sync.get(['darkMode'], ({ darkMode }) => {
+    if (darkMode) {
+      container.setAttribute('data-theme', 'dark');
+    }
+  });
 
   function getPopupSetting(key, defaultValue) {
     return localStorage.getItem(key) || defaultValue;
@@ -94,11 +124,25 @@ function createPopupElement(word, results) {
 
   container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; max-height: ${config.popup.maxHeight};`;
 
-  const tabs = createTabs(["Rhymes", "Near", "Similar", "Related"]);
+  const tabs = createTabs(["Rhymes", "Near", "Similar", "Related", "Definition"]);
+  const definitionData = results.pop();
+
   const contentBlocks = results
     .map((result, index) => renderBlock(result))
     .join("");
-  container.innerHTML = `<div class="rhymey-word">${word}</div>${tabs}<div class="rhymey-content">${contentBlocks}</div>`;
+
+  const definitionBlock = `<div class="rhymey-tab-content" style="display: none;">
+    ${renderDefinition(definitionData)}
+  </div>`;
+
+  container.innerHTML = `
+    <div class="rhymey-word">${word}</div>
+    ${tabs}
+    <div class="rhymey-content">
+      ${contentBlocks}
+      ${definitionBlock}
+    </div>`;
+
   return container;
 }
 
@@ -108,7 +152,7 @@ function createTabs(titles) {
 
   titles.forEach((title, index) => {
     const tab = document.createElement('div');
-    tab.className = `rhymey-tab ${index === 0 ? 'active' : ''}`;
+    tab.className = 'rhymey-tab';
     tab.dataset.index = index;
     tab.textContent = title;
     tabsContainer.appendChild(tab);
@@ -335,7 +379,7 @@ function handleWindowResize() {
 
 document.addEventListener("click", (event) => {
   if (event.target.classList.contains("rhymey-tab")) {
-    const index = event.target.dataset.index;
+    const index = Number.parseInt(event.target.dataset.index);
     const allTabs = document.querySelectorAll(".rhymey-tab");
     const allContents = document.querySelectorAll(".rhymey-tab-content");
 
@@ -353,6 +397,7 @@ document.addEventListener("click", (event) => {
     allContents[index].style.display = "block";
 
     adjustPopupHeight(document.getElementById("RhymeContainer"));
+    saveSelectedTabIndex(index);
   }
 });
 
@@ -366,4 +411,21 @@ function adjustPopupHeight(popup) {
     popup.style.height = `${popup.scrollHeight + 10}px`;
     popup.style.overflowY = "hidden";
   }
+}
+
+function renderDefinition(data) {
+  if (!data || data.length === 0) return 'No definition found.';
+
+  const definitions = data[0].defs || [];
+  return definitions.map(def => {
+    const [type, meaning] = def.split('\t');
+    return `<div class="rhymey-definition">
+      <span class="word-type">${type}</span>
+      <span class="meaning">${meaning}</span>
+    </div>`;
+  }).join('');
+}
+
+function saveSelectedTabIndex(index) {
+  chrome.storage.sync.set({ selectedTabIndex: index });
 }
