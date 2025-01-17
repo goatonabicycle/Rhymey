@@ -1,5 +1,11 @@
 Releases:
 
+- v4 
+    - Aesthetic redo
+    - Definition added
+    - Tab selection is now kept
+    - Options page with dark mode option
+
 - v3.0.1
     - Minor styling improvements
 
