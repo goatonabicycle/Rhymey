@@ -58,7 +58,7 @@ async function fetchWordInfo(word) {
 
 async function checkDarkMode() {
   try {
-    const { darkMode } = await chrome.storage.sync.get(['darkMode']);
+    const { darkMode = true } = await chrome.storage.sync.get(['darkMode']);
     const popup = document.getElementById('RhymeContainer');
     if (popup) {
       if (darkMode) {
@@ -108,8 +108,8 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
 
-  chrome.storage.sync.get(['darkMode'], ({ darkMode }) => {
-    if (darkMode) {
+  chrome.storage.sync.get(['darkMode'], (result) => {
+    if (result.darkMode !== false) {
       container.setAttribute('data-theme', 'dark');
     }
   });
