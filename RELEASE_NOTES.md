@@ -1,5 +1,8 @@
 Releases:
 
+- v4.0.1
+    - Biome linting and never horizontal scroll bars
+
 - v4 
     - Aesthetic redo
     - Definition added

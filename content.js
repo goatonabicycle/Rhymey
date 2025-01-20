@@ -58,17 +58,17 @@ async function fetchWordInfo(word) {
 
 async function checkDarkMode() {
   try {
-    const { darkMode = true } = await chrome.storage.sync.get(['darkMode']);
-    const popup = document.getElementById('RhymeContainer');
+    const { darkMode = true } = await chrome.storage.sync.get(["darkMode"]);
+    const popup = document.getElementById("RhymeContainer");
     if (popup) {
       if (darkMode) {
-        popup.setAttribute('data-theme', 'dark');
+        popup.setAttribute("data-theme", "dark");
       } else {
-        popup.removeAttribute('data-theme');
+        popup.removeAttribute("data-theme");
       }
     }
   } catch (error) {
-    console.error('Error checking dark mode:', error);
+    console.error("Error checking dark mode:", error);
   }
 }
 
@@ -80,10 +80,16 @@ async function displayPopup(word, results) {
   makeDraggable(popup);
   makeResizable(popup);
 
-  const { selectedTabIndex = 0 } = await chrome.storage.sync.get(['selectedTabIndex']);
+  const { selectedTabIndex = 0 } = await chrome.storage.sync.get([
+    "selectedTabIndex",
+  ]);
 
-  const tab = document.querySelector(`.rhymey-tab[data-index="${selectedTabIndex}"]`);
-  const content = document.querySelectorAll(".rhymey-tab-content")[selectedTabIndex];
+  const tab = document.querySelector(
+    `.rhymey-tab[data-index="${selectedTabIndex}"]`,
+  );
+  const content = document.querySelectorAll(".rhymey-tab-content")[
+    selectedTabIndex
+  ];
 
   if (tab && content) {
     tab.classList.add("active");
@@ -108,9 +114,9 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
 
-  chrome.storage.sync.get(['darkMode'], (result) => {
+  chrome.storage.sync.get(["darkMode"], (result) => {
     if (result.darkMode !== false) {
-      container.setAttribute('data-theme', 'dark');
+      container.setAttribute("data-theme", "dark");
     }
   });
 
@@ -124,7 +130,13 @@ function createPopupElement(word, results) {
 
   container.style.cssText = `position: fixed; top: ${popupTop}; right: ${popupRight}; width: ${popupWidth}; max-height: ${config.popup.maxHeight};`;
 
-  const tabs = createTabs(["Rhymes", "Near", "Similar", "Related", "Definition"]);
+  const tabs = createTabs([
+    "Rhymes",
+    "Near",
+    "Similar",
+    "Related",
+    "Definition",
+  ]);
   const definitionData = results.pop();
 
   const contentBlocks = results
@@ -147,12 +159,12 @@ function createPopupElement(word, results) {
 }
 
 function createTabs(titles) {
-  const tabsContainer = document.createElement('div');
-  tabsContainer.className = 'rhymey-tabs';
+  const tabsContainer = document.createElement("div");
+  tabsContainer.className = "rhymey-tabs";
 
   titles.forEach((title, index) => {
-    const tab = document.createElement('div');
-    tab.className = 'rhymey-tab';
+    const tab = document.createElement("div");
+    tab.className = "rhymey-tab";
     tab.dataset.index = index;
     tab.textContent = title;
     tabsContainer.appendChild(tab);
@@ -162,10 +174,11 @@ function createTabs(titles) {
 }
 
 function renderBlock(data) {
-  const content = data.length === 0
-    ? '<div class="rhymey-empty">No matches found</div>'
-    : `<div class="rhymey-words-grid">
-         ${data.map(item => `<div class='rhymey-hover'>${item.word}</div>`).join("")}
+  const content =
+    data.length === 0
+      ? '<div class="rhymey-empty">No matches found</div>'
+      : `<div class="rhymey-words-grid">
+         ${data.map((item) => `<div class='rhymey-hover'>${item.word}</div>`).join("")}
        </div>`;
 
   return `<div class="rhymey-tab-content" style="display: none;">${content}</div>`;
@@ -414,16 +427,18 @@ function adjustPopupHeight(popup) {
 }
 
 function renderDefinition(data) {
-  if (!data || data.length === 0) return 'No definition found.';
+  if (!data || data.length === 0) return "No definition found.";
 
   const definitions = data[0].defs || [];
-  return definitions.map(def => {
-    const [type, meaning] = def.split('\t');
-    return `<div class="rhymey-definition">
+  return definitions
+    .map((def) => {
+      const [type, meaning] = def.split("\t");
+      return `<div class="rhymey-definition">
       <span class="word-type">${type}</span>
       <span class="meaning">${meaning}</span>
     </div>`;
-  }).join('');
+    })
+    .join("");
 }
 
 function saveSelectedTabIndex(index) {
