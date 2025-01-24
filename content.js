@@ -1,3 +1,5 @@
+const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
+
 const config = {
   wordMinimumLength: 2,
   apiBaseUrl: "https://api.datamuse.com/words",
@@ -58,7 +60,7 @@ async function fetchWordInfo(word) {
 
 async function checkDarkMode() {
   try {
-    const { darkMode = true } = await chrome.storage.sync.get(["darkMode"]);
+    const { darkMode = true } = await browserAPI.storage.sync.get(["darkMode"]);
     const popup = document.getElementById("RhymeContainer");
     if (popup) {
       if (darkMode) {
@@ -114,8 +116,8 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
 
-  chrome.storage.sync.get(["darkMode"], (result) => {
-    if (result.darkMode !== false) {
+  browserAPI.storage.sync.get(["darkMode"], (result) => {
+    if (result?.darkMode !== false) {
       container.setAttribute("data-theme", "dark");
     }
   });
@@ -442,5 +444,5 @@ function renderDefinition(data) {
 }
 
 function saveSelectedTabIndex(index) {
-  chrome.storage.sync.set({ selectedTabIndex: index });
+  browserAPI.storage.sync.set({ selectedTabIndex: index });
 }

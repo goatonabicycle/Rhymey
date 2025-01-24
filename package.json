@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "extension build",
+    "buildff": "extension build --browser firefox",
     "dev": "extension dev",
+    "devff": "extension dev --browser firefox",
     "start": "extension start",
     "lint": "biome check --fix --unsafe",
     "release:chrome": "node create-new-release.js"
