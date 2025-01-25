@@ -4,7 +4,8 @@ Double click on any words and you'll see various useful words for all your poetr
 
 Any suggestions are super welcome.
 
-Link: https://chrome.google.com/webstore/detail/rhymey/fbkmdcolngnmmhmdkhngfmdmeofipahp?hl=en
+Chrome Web Store link: https://chrome.google.com/webstore/detail/rhymey/fbkmdcolngnmmhmdkhngfmdmeofipahp?hl=en
+Firefox Addon Store link: Coming soon.
 
 Rhymey uses the lovely datamuse api (https://www.datamuse.com/api/)
 
