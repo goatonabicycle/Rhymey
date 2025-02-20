@@ -112,7 +112,7 @@ async function main() {
     const zipPath = path.join(releasesDir, `extension-v${version}.zip`);
     await zipDirectory(extensionDir, zipPath);
 
-    // Do all the chrome token and uploading stuff here.
+    DoingLog("Uploading to Chrome Web Store...");
 
     const store = chromeWebstoreUpload({
       extensionId: secrets.extensionId,
@@ -122,6 +122,29 @@ async function main() {
     });
 
     console.log({ store });
+
+    const uploadFile = await fs.readFile(zipPath);
+
+    try {
+      DoingLog("Uploading new version...");
+      const uploadResult = await store.uploadExisting(uploadFile);
+
+      if (!uploadResult || !uploadResult.uploadState) {
+        throw new Error("Upload failed: No upload state returned");
+      }
+
+      if (uploadResult.uploadState !== "SUCCESS") {
+        throw new Error(`Upload failed: ${uploadResult.uploadState}`);
+      }
+
+      YayLog(`Successfully uploaded version ${version} as draft`);
+      YayLog("Go to the Chrome Web Store Developer Dashboard yo!");
+
+    } catch (error) {
+      throw new Error(
+        chalk.red(`Failed to upload to Chrome Web Store: ${error.message}`),
+      );
+    }
 
     YayLog(`Process completed successfully for version ${version}`);
   } catch (error) {
