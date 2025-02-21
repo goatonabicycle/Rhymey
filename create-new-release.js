@@ -91,7 +91,6 @@ async function main() {
 
     DoingLog(`Starting process for version ${version}`);
     const secrets = await loadSecrets();
-    YayLog([secrets.CLIENT_ID, secrets.REFRESH_TOKEN].join("|"));
     await updateManifest(version);
 
     const extensionDir = path.join(process.cwd(), "dist/chrome");
@@ -114,20 +113,57 @@ async function main() {
 
     DoingLog("Uploading to Chrome Web Store...");
 
-    const store = chromeWebstoreUpload({
-      extensionId: secrets.extensionId,
-      clientId: secrets.clientId,
-      clientSecret: secrets.clientSecret,
-      refreshToken: secrets.refreshToken,
+    console.log("Verifying credentials...");
+    const credentials = {
+      extensionId: String(secrets.extensionId),
+      clientId: String(secrets.clientId),
+      clientSecret: String(secrets.clientSecret),
+      refreshToken: String(secrets.refreshToken)
+    };
+
+    console.log("Credential formats:", {
+      extensionIdLength: credentials.extensionId.length,
+      clientIdEndsWithGoogleusercontent: credentials.clientId.endsWith('.apps.googleusercontent.com'),
+      clientSecretLength: credentials.clientSecret.length,
+      refreshTokenLength: credentials.refreshToken.length
     });
 
-    console.log({ store });
+    const store = chromeWebstoreUpload(credentials);
+
+    let token;
+    try {
+      token = await store.fetchToken();
+      console.log("Token fetch response:", token);
+    } catch (tokenError) {
+      console.error("Complete token error:", tokenError);
+      throw new Error(`Authentication failed: ${tokenError.message}`);
+    }
+
+    if (!token || !token.token) {
+      throw new Error("Failed to obtain valid authentication token");
+    }
 
     const uploadFile = await fs.readFile(zipPath);
 
     try {
       DoingLog("Uploading new version...");
-      const uploadResult = await store.uploadExisting(uploadFile);
+
+      console.log("Upload file details:", {
+        size: uploadFile.length,
+        exists: !!uploadFile
+      });
+
+      const uploadResult = await store.uploadExisting(uploadFile).catch(err => {
+        console.error('Upload error details:', {
+          message: err.message,
+          response: err.response?.data,
+          status: err.response?.status,
+          headers: err.response?.headers
+        });
+        throw err;
+      });
+
+      console.log("Upload response:", uploadResult);
 
       if (!uploadResult || !uploadResult.uploadState) {
         throw new Error("Upload failed: No upload state returned");
@@ -141,6 +177,13 @@ async function main() {
       YayLog("Go to the Chrome Web Store Developer Dashboard yo!");
 
     } catch (error) {
+      console.error("Full error details:", {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        response: error.response?.data
+      });
+
       throw new Error(
         chalk.red(`Failed to upload to Chrome Web Store: ${error.message}`),
       );
