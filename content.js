@@ -2,7 +2,10 @@ const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 
 const config = {
   wordMinimumLength: 2,
+  wordMaximumLength: 50,
   apiBaseUrl: "https://api.datamuse.com/words",
+  cacheSize: 100,
+  cacheExpiry: 24 * 60 * 60 * 1000,
   popup: {
     top: "20px",
     right: "20px",
@@ -21,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function handleDoubleClick() {
   const selectedWord = getSelectedText().trim();
 
-  if (selectedWord?.length > config.wordMinimumLength) {
+  if (selectedWord?.length >= config.wordMinimumLength && selectedWord.length <= config.wordMaximumLength) {
     const wordInfo = await fetchWordInfo(selectedWord);
     displayPopup(selectedWord, wordInfo);
   }
@@ -46,6 +49,11 @@ function getSelectedText() {
 }
 
 async function fetchWordInfo(word) {
+  const cachedResult = await getCachedWordInfo(word);
+  if (cachedResult) {
+    return cachedResult;
+  }
+
   const queries = ["rel_rhy", "rel_nry", "ml", "rel_trg"].map(
     (rel) => `${config.apiBaseUrl}?${rel}=${word}&md=d`,
   );
@@ -55,7 +63,50 @@ async function fetchWordInfo(word) {
   const requests = queries.map((query) =>
     fetch(query).then((res) => res.json()),
   );
-  return Promise.all(requests);
+  const results = await Promise.all(requests);
+
+  await cacheWordInfo(word, results);
+
+  return results;
+}
+
+async function getCachedWordInfo(word) {
+  try {
+    const { wordCache = {} } = await browserAPI.storage.local.get(['wordCache']);
+    const cached = wordCache[word];
+
+    if (cached && Date.now() - cached.timestamp < config.cacheExpiry) {
+      return cached.results;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+}
+
+async function cacheWordInfo(word, results) {
+  try {
+    const { wordCache = {} } = await browserAPI.storage.local.get(['wordCache']);
+
+    wordCache[word] = {
+      results,
+      timestamp: Date.now()
+    };
+
+    const entries = Object.entries(wordCache);
+    if (entries.length > config.cacheSize) {
+      entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+      const toRemove = entries.slice(0, entries.length - config.cacheSize);
+      for (const [key] of toRemove) {
+        delete wordCache[key];
+      }
+    }
+
+    await browserAPI.storage.local.set({ wordCache });
+  } catch (error) {
+    console.error('Error writing to cache:', error);
+  }
 }
 
 async function checkDarkMode() {
@@ -82,7 +133,7 @@ async function displayPopup(word, results) {
   makeDraggable(popup);
   makeResizable(popup);
 
-  const { selectedTabIndex = 0 } = await chrome.storage.sync.get([
+  const { selectedTabIndex = 0 } = await browserAPI.storage.sync.get([
     "selectedTabIndex",
   ]);
 
@@ -116,7 +167,7 @@ function createPopupElement(word, results) {
   container.id = "RhymeContainer";
   container.className = "rhymey-popup-contain";
 
-  browserAPI.storage.sync.get(["darkMode"], (result) => {
+  browserAPI.storage.sync.get(["darkMode"]).then((result) => {
     if (result?.darkMode !== false) {
       container.setAttribute("data-theme", "dark");
     }
