@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const darkModeToggle = document.getElementById("darkMode");
 
-  chrome.storage.sync.get(["darkMode"], (result) => {
+  browser.storage.sync.get(["darkMode"]).then((result) => {
     darkModeToggle.checked = result.darkMode || false;
   });
 
   darkModeToggle.addEventListener("change", () => {
-    chrome.storage.sync.set({ darkMode: darkModeToggle.checked });
+    browser.storage.sync.set({ darkMode: darkModeToggle.checked });
   });
 });

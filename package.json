@@ -3,11 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "extension build",
-    "buildff": "extension build --browser firefox",
-    "dev": "extension dev",
-    "devff": "extension dev --browser firefox",
-    "start": "extension start",
+    "dev": "wxt",
+    "dev:chrome": "wxt -b chrome",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:chrome": "wxt build -b chrome",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:chrome": "wxt zip -b chrome",
+    "zip:firefox": "wxt zip -b firefox",
     "lint": "biome check --fix --unsafe",
     "release:chrome": "node create-new-release.js"
   },
@@ -16,6 +20,6 @@
     "archiver": "^7.0.1",
     "chalk": "^5.3.0",
     "chrome-webstore-upload": "^3.1.4",
-    "extension": "latest"
+    "wxt": "^0.19.0"
   }
 }

@@ -1,6 +1,19 @@
+# IDE
 .vscode/settings.json
+
+# Secrets
 secrets.json
+
+# Dependencies
 node_modules
+
+# Build outputs
 dist
+.output
 releases
-DevelopmentRhymeynode_modulesextension-developdistcerts
+
+# WXT generated
+.wxt
+
+# Local dev
+.claude/
