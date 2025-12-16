@@ -1,7 +1,6 @@
 import { fetchWordInfo } from "../src/api/datamuse.js";
 import { config } from "../src/config.js";
 import { displayPopup, removeExistingPopup } from "../src/ui/popup.js";
-import { handleWindowResize } from "../src/ui/resizable.js";
 import { getSelectedText } from "../src/utils/selection.js";
 import "./style.css";
 
@@ -15,7 +14,6 @@ export default defineContentScript({
       document.addEventListener("dblclick", handleDoubleClick);
       document.addEventListener("mouseup", handleClosePopup);
       document.addEventListener("keydown", handleKeydownPopupClose);
-      window.addEventListener("resize", handleWindowResize);
     });
   },
 });

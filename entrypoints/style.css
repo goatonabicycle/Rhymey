@@ -25,9 +25,11 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   font-size: 14px;
-  overflow: hidden;
   z-index: 10000;
   animation: fadeIn 0.15s ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
 }
 
 @keyframes fadeIn {
@@ -35,11 +37,16 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.rhymey-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+
 .rhymey-word {
   padding: 16px 16px 12px;
   font-size: 18px;
   font-weight: 600;
-  border-bottom: 1px solid var(--border);
 }
 
 .rhymey-list {
@@ -47,8 +54,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  max-height: 300px;
   overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 60px;
 }
 
 .rhymey-chip {
@@ -82,6 +90,7 @@
   align-items: center;
   gap: 6px;
   transition: color 0.15s;
+  flex-shrink: 0;
 }
 
 .rhymey-more-toggle:hover {
@@ -101,8 +110,8 @@
 .rhymey-more-content {
   display: none;
   padding: 0 16px 16px;
-  max-height: 300px;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .rhymey-more-content.open {
@@ -150,37 +159,6 @@
   letter-spacing: 0.5px;
   color: var(--accent);
   margin-right: 8px;
-}
-
-/* Resize handle */
-.resizer {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  bottom: 0;
-  right: 0;
-  cursor: se-resize;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.rhymey-popup:hover .resizer {
-  opacity: 0.3;
-}
-
-.resizer:hover {
-  opacity: 0.6;
-}
-
-.resizer::after {
-  content: "";
-  position: absolute;
-  bottom: 3px;
-  right: 3px;
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid var(--text-muted);
-  border-bottom: 2px solid var(--text-muted);
 }
 
 /* Scrollbar */
