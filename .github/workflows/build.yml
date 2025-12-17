@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rhymey-chrome
-          path: .output/*-chrome.zip
+          path: .output/rhymey-*-chrome.zip
 
       - name: Build and zip Firefox extension
         run: npm run zip:firefox
@@ -38,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rhymey-firefox
-          path: .output/*-firefox.zip
+          path: .output/rhymey-*-firefox.zip
