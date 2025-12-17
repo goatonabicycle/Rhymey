@@ -12,14 +12,10 @@
     "zip": "wxt zip",
     "zip:chrome": "wxt zip -b chrome",
     "zip:firefox": "wxt zip -b firefox",
-    "lint": "biome check --fix --unsafe",
-    "release:chrome": "node create-new-release.js"
+    "lint": "biome check --fix --unsafe"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
-    "archiver": "^7.0.1",
-    "chalk": "^5.3.0",
-    "chrome-webstore-upload": "^3.1.4",
     "wxt": "^0.19.0"
   }
 }
