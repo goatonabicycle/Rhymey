@@ -22,23 +22,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and zip Chrome extension
-        run: npm run zip:chrome
+      - name: Build and zip extensions
+        run: |
+          npm run zip:chrome
+          npm run zip:firefox
 
-      - name: List Chrome output
-        run: ls -la .output/
-
-      - name: Upload Chrome extension
+      - name: Upload extensions
         uses: actions/upload-artifact@v4
         with:
-          name: rhymey-chrome
-          path: .output/*.zip
-
-      - name: Build and zip Firefox extension
-        run: npm run zip:firefox
-
-      - name: Upload Firefox extension
-        uses: actions/upload-artifact@v4
-        with:
-          name: rhymey-firefox
-          path: .output/*firefox*.zip
+          name: rhymey-extensions
+          path: .output/
