@@ -25,11 +25,14 @@ jobs:
       - name: Build and zip Chrome extension
         run: npm run zip:chrome
 
+      - name: List Chrome output
+        run: ls -la .output/
+
       - name: Upload Chrome extension
         uses: actions/upload-artifact@v4
         with:
           name: rhymey-chrome
-          path: .output/rhymey-*-chrome.zip
+          path: .output/*.zip
 
       - name: Build and zip Firefox extension
         run: npm run zip:firefox
@@ -38,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rhymey-firefox
-          path: .output/rhymey-*-firefox.zip
+          path: .output/*firefox*.zip
