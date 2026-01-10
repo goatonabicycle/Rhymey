@@ -16,6 +16,7 @@ export async function displayPopup(word, results) {
   await checkDarkMode();
   makeDraggable(popup);
   setupMoreToggle(popup);
+  setupResizablePanels(popup);
 }
 
 export function createPopupElement(word, results) {
@@ -55,6 +56,7 @@ export function createPopupElement(word, results) {
       <div class="rhymey-word">${word}</div>
     </div>
     <div class="rhymey-list">${rhymesList}</div>
+    <div class="rhymey-divider"></div>
     <div class="rhymey-more-toggle">More</div>
     <div class="rhymey-more-content">${moreContent}</div>
   `;
@@ -242,6 +244,46 @@ function setupMoreToggle(popup) {
   toggle?.addEventListener("click", () => {
     toggle.classList.toggle("open");
     content.classList.toggle("open");
+  });
+}
+
+function setupResizablePanels(popup) {
+  const divider = popup.querySelector(".rhymey-divider");
+  const list = popup.querySelector(".rhymey-list");
+  const moreContent = popup.querySelector(".rhymey-more-content");
+
+  if (!divider || !list || !moreContent) return;
+
+  divider.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+
+    const startY = e.clientY;
+    const startListHeight = list.offsetHeight;
+    const startMoreHeight = moreContent.offsetHeight;
+    const isMoreOpen = moreContent.classList.contains("open");
+
+    function onMouseMove(e) {
+      const dy = e.clientY - startY;
+      const minHeight = 60;
+
+      const newListHeight = Math.max(minHeight, startListHeight + dy);
+      list.style.flex = "none";
+      list.style.height = `${newListHeight}px`;
+
+      if (isMoreOpen) {
+        const newMoreHeight = Math.max(minHeight, startMoreHeight - dy);
+        moreContent.style.flex = "none";
+        moreContent.style.height = `${newMoreHeight}px`;
+      }
+    }
+
+    function onMouseUp() {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    }
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
   });
 }
 
